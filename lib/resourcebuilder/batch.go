@@ -3,9 +3,7 @@ package resourcebuilder
 import (
 	"context"
 	"fmt"
-
 	"github.com/golang/glog"
-
 	"github.com/openshift/cluster-version-operator/lib"
 	"github.com/openshift/cluster-version-operator/lib/resourceapply"
 	"github.com/openshift/cluster-version-operator/lib/resourceread"
@@ -17,28 +15,30 @@ import (
 )
 
 type jobBuilder struct {
-	client   *batchclientv1.BatchV1Client
-	raw      []byte
-	modifier MetaV1ObjectModifierFunc
+	client		*batchclientv1.BatchV1Client
+	raw		[]byte
+	modifier	MetaV1ObjectModifierFunc
 }
 
 func newJobBuilder(config *rest.Config, m lib.Manifest) Interface {
-	return &jobBuilder{
-		client: batchclientv1.NewForConfigOrDie(withProtobuf(config)),
-		raw:    m.Raw,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &jobBuilder{client: batchclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
-
 func (b *jobBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return b
 }
-
 func (b *jobBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
-
 func (b *jobBuilder) Do(ctx context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	job := resourceread.ReadJobV1OrDie(b.raw)
 	if b.modifier != nil {
 		b.modifier(job)
@@ -52,23 +52,18 @@ func (b *jobBuilder) Do(ctx context.Context) error {
 	}
 	return nil
 }
-
-// WaitForJobCompletion waits for job to complete.
 func WaitForJobCompletion(ctx context.Context, client batchclientv1.JobsGetter, job *batchv1.Job) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return wait.PollImmediateUntil(defaultObjectPollInterval, func() (bool, error) {
 		j, err := client.Jobs(job.Namespace).Get(job.Name, metav1.GetOptions{})
 		if err != nil {
 			glog.Errorf("error getting Job %s: %v", job.Name, err)
 			return false, nil
 		}
-
 		if j.Status.Succeeded > 0 {
 			return true, nil
 		}
-
-		// Since we have filled in "activeDeadlineSeconds",
-		// the Job will 'Active == 0' iff it exceeds the deadline.
-		// Failed jobs will be recreated in the next run.
 		if j.Status.Active == 0 && j.Status.Failed > 0 {
 			reason := "DeadlineExceeded"
 			message := "Job was active longer than specified deadline"

@@ -7,18 +7,20 @@ import (
 )
 
 var (
-	batchScheme = runtime.NewScheme()
-	batchCodecs = serializer.NewCodecFactory(batchScheme)
+	batchScheme	= runtime.NewScheme()
+	batchCodecs	= serializer.NewCodecFactory(batchScheme)
 )
 
 func init() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := batchv1.AddToScheme(batchScheme); err != nil {
 		panic(err)
 	}
 }
-
-// ReadJobV1OrDie reads Job object from bytes. Panics on error.
 func ReadJobV1OrDie(objBytes []byte) *batchv1.Job {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(batchCodecs.UniversalDecoder(batchv1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)

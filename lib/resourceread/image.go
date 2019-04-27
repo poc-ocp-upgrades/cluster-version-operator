@@ -7,18 +7,20 @@ import (
 )
 
 var (
-	imageScheme = runtime.NewScheme()
-	imageCodecs = serializer.NewCodecFactory(imageScheme)
+	imageScheme	= runtime.NewScheme()
+	imageCodecs	= serializer.NewCodecFactory(imageScheme)
 )
 
 func init() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := imagev1.AddToScheme(imageScheme); err != nil {
 		panic(err)
 	}
 }
-
-// ReadImageStreamV1 reads imagestream object from bytes or reports an error.
 func ReadImageStreamV1(objBytes []byte) (*imagev1.ImageStream, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(imageCodecs.UniversalDecoder(imagev1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		return nil, err

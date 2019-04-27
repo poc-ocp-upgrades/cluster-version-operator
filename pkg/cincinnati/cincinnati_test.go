@@ -8,70 +8,42 @@ import (
 	"net/url"
 	"reflect"
 	"testing"
-
 	"github.com/blang/semver"
-	_ "github.com/golang/glog" // integration tests set glog flags.
+	_ "github.com/golang/glog"
 	"github.com/google/uuid"
 )
 
 func TestGetUpdates(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	clientID := uuid.Must(uuid.Parse("01234567-0123-0123-0123-0123456789ab"))
 	channelName := "test-channel"
 	tests := []struct {
-		name    string
-		version string
-
-		expectedQuery string
-		available     []Update
-		err           string
-	}{{
-		name:          "one update available",
-		version:       "4.0.0-4",
-		expectedQuery: "channel=test-channel&id=01234567-0123-0123-0123-0123456789ab&version=4.0.0-4",
-		available: []Update{
-			{semver.MustParse("4.0.0-5"), "quay.io/openshift-release-dev/ocp-release:4.0.0-5"},
-		},
-	}, {
-		name:          "two updates available",
-		version:       "4.0.0-5",
-		expectedQuery: "channel=test-channel&id=01234567-0123-0123-0123-0123456789ab&version=4.0.0-5",
-		available: []Update{
-			{semver.MustParse("4.0.0-6"), "quay.io/openshift-release-dev/ocp-release:4.0.0-6"},
-			{semver.MustParse("4.0.0-6+2"), "quay.io/openshift-release-dev/ocp-release:4.0.0-6+2"},
-		},
-	}, {
-		name:          "no updates available",
-		version:       "4.0.0-0.okd-0",
-		expectedQuery: "channel=test-channel&id=01234567-0123-0123-0123-0123456789ab&version=4.0.0-0.okd-0",
-	}, {
-		name:          "unknown version",
-		version:       "4.0.0-3",
-		expectedQuery: "channel=test-channel&id=01234567-0123-0123-0123-0123456789ab&version=4.0.0-3",
-		err:           "currently installed version 4.0.0-3 not found in the \"test-channel\" channel",
-	}}
+		name		string
+		version		string
+		expectedQuery	string
+		available	[]Update
+		err		string
+	}{{name: "one update available", version: "4.0.0-4", expectedQuery: "channel=test-channel&id=01234567-0123-0123-0123-0123456789ab&version=4.0.0-4", available: []Update{{semver.MustParse("4.0.0-5"), "quay.io/openshift-release-dev/ocp-release:4.0.0-5"}}}, {name: "two updates available", version: "4.0.0-5", expectedQuery: "channel=test-channel&id=01234567-0123-0123-0123-0123456789ab&version=4.0.0-5", available: []Update{{semver.MustParse("4.0.0-6"), "quay.io/openshift-release-dev/ocp-release:4.0.0-6"}, {semver.MustParse("4.0.0-6+2"), "quay.io/openshift-release-dev/ocp-release:4.0.0-6+2"}}}, {name: "no updates available", version: "4.0.0-0.okd-0", expectedQuery: "channel=test-channel&id=01234567-0123-0123-0123-0123456789ab&version=4.0.0-0.okd-0"}, {name: "unknown version", version: "4.0.0-3", expectedQuery: "channel=test-channel&id=01234567-0123-0123-0123-0123456789ab&version=4.0.0-3", err: "currently installed version 4.0.0-3 not found in the \"test-channel\" channel"}}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			requestQuery := make(chan string, 1)
 			defer close(requestQuery)
-
 			handler := func(w http.ResponseWriter, r *http.Request) {
 				select {
 				case requestQuery <- r.URL.RawQuery:
 				default:
 					t.Fatalf("received multiple requests at upstream URL")
 				}
-
 				if r.Method != http.MethodGet && r.Method != http.MethodHead {
 					w.WriteHeader(http.StatusMethodNotAllowed)
 					return
 				}
-
 				mtype := r.Header.Get("Accept")
 				if mtype != GraphMediaType {
 					w.WriteHeader(http.StatusUnsupportedMediaType)
 					return
 				}
-
 				_, err := w.Write([]byte(`{
 					"nodes": [
 					  {
@@ -117,12 +89,9 @@ func TestGetUpdates(t *testing.T) {
 					return
 				}
 			}
-
 			ts := httptest.NewServer(http.HandlerFunc(handler))
 			defer ts.Close()
-
 			c := NewClient(clientID)
-
 			updates, err := c.GetUpdates(ts.URL, channelName, semver.MustParse(test.version))
 			if test.err == "" {
 				if err != nil {
@@ -136,7 +105,6 @@ func TestGetUpdates(t *testing.T) {
 					t.Fatalf("expected err to be %s, got: %v", test.err, err)
 				}
 			}
-
 			actualQuery := ""
 			select {
 			case actualQuery = <-requestQuery:
@@ -157,52 +125,37 @@ func TestGetUpdates(t *testing.T) {
 		})
 	}
 }
-
 func Test_nodeUnmarshalJSON(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := []struct {
-		raw []byte
-
-		exp node
-		err string
-	}{{
-		raw: []byte(`{
+		raw	[]byte
+		exp	node
+		err	string
+	}{{raw: []byte(`{
 			"version": "4.0.0-5",
 			"payload": "quay.io/openshift-release-dev/ocp-release:4.0.0-5",
 			"metadata": {}
-		  }`),
-
-		exp: node{semver.MustParse("4.0.0-5"), "quay.io/openshift-release-dev/ocp-release:4.0.0-5"},
-	}, {
-		raw: []byte(`{
+		  }`), exp: node{semver.MustParse("4.0.0-5"), "quay.io/openshift-release-dev/ocp-release:4.0.0-5"}}, {raw: []byte(`{
 			"version": "4.0.0-0.1",
 			"payload": "quay.io/openshift-release-dev/ocp-release:4.0.0-0.1",
 			"metadata": {
 			  "description": "This is the beta1 image based on the 4.0.0-0.nightly-2019-01-15-010905 build"
 			}
-		  }`),
-		exp: node{semver.MustParse("4.0.0-0.1"), "quay.io/openshift-release-dev/ocp-release:4.0.0-0.1"},
-	}, {
-		raw: []byte(`{
+		  }`), exp: node{semver.MustParse("4.0.0-0.1"), "quay.io/openshift-release-dev/ocp-release:4.0.0-0.1"}}, {raw: []byte(`{
 			"version": "v4.0.0-0.1",
 			"payload": "quay.io/openshift-release-dev/ocp-release:4.0.0-0.1",
 			"metadata": {
 			  "description": "This is the beta1 image based on the 4.0.0-0.nightly-2019-01-15-010905 build"
 			}
-		  }`),
-		err: `Invalid character(s) found in major number "v4"`,
-	}, {
-		raw: []byte(`{
+		  }`), err: `Invalid character(s) found in major number "v4"`}, {raw: []byte(`{
 			"version": "4-0-0+0.1",
 			"payload": "quay.io/openshift-release-dev/ocp-release:4.0.0-0.1",
 			"metadata": {
 			  "description": "This is the beta1 image based on the 4.0.0-0.nightly-2019-01-15-010905 build"
 			}
 		  }
-	  `),
-
-		err: "No Major.Minor.Patch elements found",
-	}}
-
+	  `), err: "No Major.Minor.Patch elements found"}}
 	for idx, test := range tests {
 		t.Run(fmt.Sprintf("#%d", idx), func(t *testing.T) {
 			var n node

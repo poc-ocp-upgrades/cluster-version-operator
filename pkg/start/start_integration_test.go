@@ -15,7 +15,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
 	"github.com/google/uuid"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -25,18 +24,14 @@ import (
 	randutil "k8s.io/apimachinery/pkg/util/rand"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/kubernetes"
-
 	configv1 "github.com/openshift/api/config/v1"
 	clientset "github.com/openshift/client-go/config/clientset/versioned"
-
 	"github.com/openshift/cluster-version-operator/lib/resourcemerge"
 	"github.com/openshift/cluster-version-operator/pkg/cvo"
 )
 
 var (
-	version_0_0_1 = map[string]interface{}{
-		"release-manifests": map[string]interface{}{
-			"image-references": `
+	version_0_0_1	= map[string]interface{}{"release-manifests": map[string]interface{}{"image-references": `
 			{
 				"kind": "ImageStream",
 				"apiVersion": "image.openshift.io/v1",
@@ -44,9 +39,7 @@ var (
 					"name": "0.0.1"
 				}
 			}
-			`,
-			// this manifest should not have ReleaseImage replaced because it is part of the user facing image
-			"config2.json": `
+			`, "config2.json": `
 			{
 				"kind": "ConfigMap",
 				"apiVersion": "v1",
@@ -59,11 +52,7 @@ var (
 					"releaseImage": "{{.ReleaseImage}}"
 				}
 			}
-			`,
-		},
-		"manifests": map[string]interface{}{
-			// this manifest is part of the innate image and should have ReleaseImage replaced
-			"config1.json": `
+			`}, "manifests": map[string]interface{}{"config1.json": `
 			{
 				"kind": "ConfigMap",
 				"apiVersion": "v1",
@@ -76,12 +65,8 @@ var (
 					"releaseImage": "{{.ReleaseImage}}"
 				}
 			}
-			`,
-		},
-	}
-	version_0_0_2 = map[string]interface{}{
-		"release-manifests": map[string]interface{}{
-			"image-references": `
+			`}}
+	version_0_0_2	= map[string]interface{}{"release-manifests": map[string]interface{}{"image-references": `
 			{
 				"kind": "ImageStream",
 				"apiVersion": "image.openshift.io/v1",
@@ -89,8 +74,7 @@ var (
 					"name": "0.0.2"
 				}
 			}
-			`,
-			"config2.json": `
+			`, "config2.json": `
 			{
 				"kind": "ConfigMap",
 				"apiVersion": "v1",
@@ -103,10 +87,7 @@ var (
 					"releaseImage": "{{.ReleaseImage}}"
 				}
 			}
-			`,
-		},
-		"manifests": map[string]interface{}{
-			"config1.json": `
+			`}, "manifests": map[string]interface{}{"config1.json": `
 			{
 				"kind": "ConfigMap",
 				"apiVersion": "v1",
@@ -119,12 +100,8 @@ var (
 					"releaseImage": "{{.ReleaseImage}}"
 				}
 			}
-			`,
-		},
-	}
-	version_0_0_2_failing = map[string]interface{}{
-		"release-manifests": map[string]interface{}{
-			"image-references": `
+			`}}
+	version_0_0_2_failing	= map[string]interface{}{"release-manifests": map[string]interface{}{"image-references": `
 			{
 				"kind": "ImageStream",
 				"apiVersion": "image.openshift.io/v1",
@@ -132,9 +109,7 @@ var (
 					"name": "0.0.2"
 				}
 			}
-			`,
-			// has invalid label value, API server will reject
-			"config2.json": `
+			`, "config2.json": `
 			{
 				"kind": "ConfigMap",
 				"apiVersion": "v1",
@@ -148,10 +123,7 @@ var (
 					"releaseImage": "{{.ReleaseImage}}"
 				}
 			}
-			`,
-		},
-		"manifests": map[string]interface{}{
-			"config1.json": `
+			`}, "manifests": map[string]interface{}{"config1.json": `
 			{
 				"kind": "ConfigMap",
 				"apiVersion": "v1",
@@ -164,18 +136,16 @@ var (
 					"releaseImage": "{{.ReleaseImage}}"
 				}
 			}
-			`,
-		},
-	}
+			`}}
 )
 
 func TestIntegrationCVO_initializeAndUpgrade(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if os.Getenv("TEST_INTEGRATION") != "1" {
 		t.Skipf("Integration tests are disabled unless TEST_INTEGRATION=1")
 	}
 	t.Parallel()
-
-	// use the same client setup as the start command
 	cb, err := newClientBuilder("")
 	if err != nil {
 		t.Fatal(err)
@@ -183,14 +153,8 @@ func TestIntegrationCVO_initializeAndUpgrade(t *testing.T) {
 	cfg := cb.RestConfig()
 	kc := cb.KubeClientOrDie("integration-test")
 	client := cb.ClientOrDie("integration-test")
-
 	ns := fmt.Sprintf("e2e-cvo-%s", randutil.String(4))
-
-	if _, err := kc.Core().Namespaces().Create(&v1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: ns,
-		},
-	}); err != nil {
+	if _, err := kc.Core().Namespaces().Create(&v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: ns}}); err != nil {
 		t.Fatal(err)
 	}
 	defer func() {
@@ -201,7 +165,6 @@ func TestIntegrationCVO_initializeAndUpgrade(t *testing.T) {
 			t.Logf("failed to delete namespace %s: %v", ns, err)
 		}
 	}()
-
 	dir, err := ioutil.TempDir("", "cvo-test")
 	if err != nil {
 		t.Fatal(err)
@@ -215,11 +178,7 @@ func TestIntegrationCVO_initializeAndUpgrade(t *testing.T) {
 	}
 	payloadImage1 := "arbitrary/release:image"
 	payloadImage2 := "arbitrary/release:image-2"
-	retriever := &mapPayloadRetriever{map[string]string{
-		payloadImage1: filepath.Join(dir, "0.0.1"),
-		payloadImage2: filepath.Join(dir, "0.0.2"),
-	}}
-
+	retriever := &mapPayloadRetriever{map[string]string{payloadImage1: filepath.Join(dir, "0.0.1"), payloadImage2: filepath.Join(dir, "0.0.2")}}
 	options := NewOptions()
 	options.Namespace = ns
 	options.Name = ns
@@ -229,28 +188,22 @@ func TestIntegrationCVO_initializeAndUpgrade(t *testing.T) {
 	options.PayloadOverride = filepath.Join(dir, "ignored")
 	options.EnableMetrics = false
 	controllers := options.NewControllerContext(cb)
-
 	worker := cvo.NewSyncWorker(retriever, cvo.NewResourceBuilder(cfg, cfg, nil), 5*time.Second, wait.Backoff{Steps: 3}).(*cvo.SyncWorker)
 	controllers.CVO.SetSyncWorkerForTesting(worker)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	controllers.Start(ctx)
-
 	t.Logf("wait until we observe the cluster version become available")
 	lastCV, err := waitForUpdateAvailable(t, client, ns, false, "0.0.1")
 	if err != nil {
 		t.Logf("latest version:\n%s", printCV(lastCV))
 		t.Fatalf("cluster version never became available: %v", err)
 	}
-
 	status := worker.Status()
-
 	t.Logf("verify the available cluster version's status matches our expectations")
 	t.Logf("Cluster version:\n%s", printCV(lastCV))
 	verifyClusterVersionStatus(t, lastCV, configv1.Update{Image: payloadImage1, Version: "0.0.1"}, 1)
 	verifyReleasePayload(t, kc, ns, "0.0.1", payloadImage1)
-
 	t.Logf("wait for the next resync and verify that status didn't change")
 	if err := wait.Poll(time.Second, 30*time.Second, func() (bool, error) {
 		updated := worker.Status()
@@ -270,7 +223,6 @@ func TestIntegrationCVO_initializeAndUpgrade(t *testing.T) {
 		t.Fatalf("unexpected: %s", diff.ObjectReflectDiff(lastCV.Status, cv.Status))
 	}
 	verifyReleasePayload(t, kc, ns, "0.0.1", payloadImage1)
-
 	t.Logf("trigger an update to a new version")
 	cv, err = client.Config().ClusterVersions().Patch(ns, types.MergePatchType, []byte(fmt.Sprintf(`{"spec":{"desiredUpdate":{"image":"%s"}}}`, payloadImage2)))
 	if err != nil {
@@ -279,7 +231,6 @@ func TestIntegrationCVO_initializeAndUpgrade(t *testing.T) {
 	if cv.Spec.DesiredUpdate == nil {
 		t.Fatalf("cluster desired version was not preserved: %s", printCV(cv))
 	}
-
 	t.Logf("wait for the new version to be available")
 	lastCV, err = waitForUpdateAvailable(t, client, ns, false, "0.0.1", "0.0.2")
 	if err != nil {
@@ -289,14 +240,11 @@ func TestIntegrationCVO_initializeAndUpgrade(t *testing.T) {
 	t.Logf("Upgraded version:\n%s", printCV(lastCV))
 	verifyClusterVersionStatus(t, lastCV, configv1.Update{Image: payloadImage2, Version: "0.0.2"}, 2)
 	verifyReleasePayload(t, kc, ns, "0.0.2", payloadImage2)
-
 	t.Logf("delete an object so that the next resync will recover it")
 	if err := kc.CoreV1().ConfigMaps(ns).Delete("config1", nil); err != nil {
 		t.Fatalf("couldn't delete CVO managed object: %v", err)
 	}
-
 	status = worker.Status()
-
 	t.Logf("wait for the next resync and verify that status didn't change")
 	if err := wait.Poll(time.Second, 30*time.Second, func() (bool, error) {
 		updated := worker.Status()
@@ -315,18 +263,15 @@ func TestIntegrationCVO_initializeAndUpgrade(t *testing.T) {
 	if !reflect.DeepEqual(cv.Status, lastCV.Status) {
 		t.Fatalf("unexpected: %s", diff.ObjectReflectDiff(lastCV.Status, cv.Status))
 	}
-
-	// should have recreated our deleted object
 	verifyReleasePayload(t, kc, ns, "0.0.2", payloadImage2)
 }
-
 func TestIntegrationCVO_initializeAndHandleError(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if os.Getenv("TEST_INTEGRATION") != "1" {
 		t.Skipf("Integration tests are disabled unless TEST_INTEGRATION=1")
 	}
 	t.Parallel()
-
-	// use the same client setup as the start command
 	cb, err := newClientBuilder("")
 	if err != nil {
 		t.Fatal(err)
@@ -334,14 +279,8 @@ func TestIntegrationCVO_initializeAndHandleError(t *testing.T) {
 	cfg := cb.RestConfig()
 	kc := cb.KubeClientOrDie("integration-test")
 	client := cb.ClientOrDie("integration-test")
-
 	ns := fmt.Sprintf("e2e-cvo-%s", randutil.String(4))
-
-	if _, err := kc.Core().Namespaces().Create(&v1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: ns,
-		},
-	}); err != nil {
+	if _, err := kc.Core().Namespaces().Create(&v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: ns}}); err != nil {
 		t.Fatal(err)
 	}
 	defer func() {
@@ -352,7 +291,6 @@ func TestIntegrationCVO_initializeAndHandleError(t *testing.T) {
 			t.Logf("failed to delete namespace %s: %v", ns, err)
 		}
 	}()
-
 	dir, err := ioutil.TempDir("", "cvo-test")
 	if err != nil {
 		t.Fatal(err)
@@ -366,11 +304,7 @@ func TestIntegrationCVO_initializeAndHandleError(t *testing.T) {
 	}
 	payloadImage1 := "arbitrary/release:image"
 	payloadImage2 := "arbitrary/release:image-2-failing"
-	retriever := &mapPayloadRetriever{map[string]string{
-		payloadImage1: filepath.Join(dir, "0.0.1"),
-		payloadImage2: filepath.Join(dir, "0.0.2"),
-	}}
-
+	retriever := &mapPayloadRetriever{map[string]string{payloadImage1: filepath.Join(dir, "0.0.1"), payloadImage2: filepath.Join(dir, "0.0.2")}}
 	options := NewOptions()
 	options.Namespace = ns
 	options.Name = ns
@@ -381,26 +315,21 @@ func TestIntegrationCVO_initializeAndHandleError(t *testing.T) {
 	options.EnableMetrics = false
 	options.ResyncInterval = 3 * time.Second
 	controllers := options.NewControllerContext(cb)
-
 	worker := cvo.NewSyncWorker(retriever, cvo.NewResourceBuilder(cfg, cfg, nil), 5*time.Second, wait.Backoff{Duration: time.Second, Factor: 1.2}).(*cvo.SyncWorker)
 	controllers.CVO.SetSyncWorkerForTesting(worker)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	controllers.Start(ctx)
-
 	t.Logf("wait until we observe the cluster version become available")
 	lastCV, err := waitForUpdateAvailable(t, client, ns, false, "0.0.1")
 	if err != nil {
 		t.Logf("latest version:\n%s", printCV(lastCV))
 		t.Fatalf("cluster version never became available: %v", err)
 	}
-
 	t.Logf("verify the available cluster version's status matches our expectations")
 	t.Logf("Cluster version:\n%s", printCV(lastCV))
 	verifyClusterVersionStatus(t, lastCV, configv1.Update{Image: payloadImage1, Version: "0.0.1"}, 1)
 	verifyReleasePayload(t, kc, ns, "0.0.1", payloadImage1)
-
 	t.Logf("trigger an update to a new version that should fail")
 	cv, err := client.Config().ClusterVersions().Patch(ns, types.MergePatchType, []byte(fmt.Sprintf(`{"spec":{"desiredUpdate":{"image":"%s"}}}`, payloadImage2)))
 	if err != nil {
@@ -409,27 +338,15 @@ func TestIntegrationCVO_initializeAndHandleError(t *testing.T) {
 	if cv.Spec.DesiredUpdate == nil {
 		t.Fatalf("cluster desired version was not preserved: %s", printCV(cv))
 	}
-
 	t.Logf("wait for operator to report failure")
-	lastCV, err = waitUntilUpgradeFails(
-		t, client, ns,
-		"UpdatePayloadResourceInvalid",
-		fmt.Sprintf(
-			`Could not update configmap "%s/config2" (2 of 2): the object is invalid, possibly due to local cluster configuration`,
-			ns,
-		),
-		"Unable to apply 0.0.2: some cluster configuration is invalid",
-		"0.0.1", "0.0.2",
-	)
+	lastCV, err = waitUntilUpgradeFails(t, client, ns, "UpdatePayloadResourceInvalid", fmt.Sprintf(`Could not update configmap "%s/config2" (2 of 2): the object is invalid, possibly due to local cluster configuration`, ns), "Unable to apply 0.0.2: some cluster configuration is invalid", "0.0.1", "0.0.2")
 	if err != nil {
 		t.Logf("latest version:\n%s", printCV(lastCV))
 		t.Fatalf("cluster version didn't report failure: %v", err)
 	}
-
 	t.Logf("ensure that one config map was updated and the other was not")
 	verifyReleasePayloadConfigMap1(t, kc, ns, "0.0.2", payloadImage2)
 	verifyReleasePayloadConfigMap2(t, kc, ns, "0.0.1", payloadImage1)
-
 	t.Logf("switch back to 0.0.1 and verify it succeeds")
 	cv, err = client.Config().ClusterVersions().Patch(ns, types.MergePatchType, []byte(`{"spec":{"desiredUpdate":{"image":"", "version":"0.0.1"}}}`))
 	if err != nil {
@@ -446,14 +363,13 @@ func TestIntegrationCVO_initializeAndHandleError(t *testing.T) {
 	verifyClusterVersionStatus(t, lastCV, configv1.Update{Image: payloadImage1, Version: "0.0.1"}, 3)
 	verifyReleasePayload(t, kc, ns, "0.0.1", payloadImage1)
 }
-
 func TestIntegrationCVO_gracefulStepDown(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if os.Getenv("TEST_INTEGRATION") != "1" {
 		t.Skipf("Integration tests are disabled unless TEST_INTEGRATION=1")
 	}
 	t.Parallel()
-
-	// use the same client setup as the start command
 	cb, err := newClientBuilder("")
 	if err != nil {
 		t.Fatal(err)
@@ -461,14 +377,8 @@ func TestIntegrationCVO_gracefulStepDown(t *testing.T) {
 	cfg := cb.RestConfig()
 	kc := cb.KubeClientOrDie("integration-test")
 	client := cb.ClientOrDie("integration-test")
-
 	ns := fmt.Sprintf("e2e-cvo-%s", randutil.String(6))
-
-	if _, err := kc.Core().Namespaces().Create(&v1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: ns,
-		},
-	}); err != nil {
+	if _, err := kc.Core().Namespaces().Create(&v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: ns}}); err != nil {
 		t.Fatal(err)
 	}
 	defer func() {
@@ -479,7 +389,6 @@ func TestIntegrationCVO_gracefulStepDown(t *testing.T) {
 			t.Logf("failed to delete namespace %s: %v", ns, err)
 		}
 	}()
-
 	options := NewOptions()
 	options.Namespace = ns
 	options.Name = ns
@@ -487,15 +396,12 @@ func TestIntegrationCVO_gracefulStepDown(t *testing.T) {
 	options.NodeName = "test-node"
 	options.EnableMetrics = false
 	controllers := options.NewControllerContext(cb)
-
 	worker := cvo.NewSyncWorker(&mapPayloadRetriever{}, cvo.NewResourceBuilder(cfg, cfg, nil), 5*time.Second, wait.Backoff{Steps: 3}).(*cvo.SyncWorker)
 	controllers.CVO.SetSyncWorkerForTesting(worker)
-
 	lock, err := createResourceLock(cb, ns, ns)
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	t.Logf("the controller should create a lock record on a config map")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -504,8 +410,6 @@ func TestIntegrationCVO_gracefulStepDown(t *testing.T) {
 		options.run(ctx, controllers, lock)
 		close(done)
 	}()
-
-	// wait until the lock record exists
 	err = wait.PollImmediate(200*time.Millisecond, 60*time.Second, func() (bool, error) {
 		_, err := kc.Core().ConfigMaps(ns).Get(ns, metav1.GetOptions{})
 		if err != nil {
@@ -519,7 +423,6 @@ func TestIntegrationCVO_gracefulStepDown(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	t.Logf("verify the controller writes a leadership change event")
 	events, err := kc.Core().Events(ns).List(metav1.ListOptions{})
 	if err != nil {
@@ -528,12 +431,10 @@ func TestIntegrationCVO_gracefulStepDown(t *testing.T) {
 	if !hasLeaderEvent(events.Items, ns) {
 		t.Fatalf("no leader election events found in\n%#v", events.Items)
 	}
-
 	t.Logf("after the context is closed, the lock record should be deleted quickly")
 	cancel()
 	startTime := time.Now()
 	var endTime time.Time
-	// the lock should be deleted immediately
 	err = wait.PollImmediate(100*time.Millisecond, 10*time.Second, func() (bool, error) {
 		_, err := kc.Core().ConfigMaps(ns).Get(ns, metav1.GetOptions{})
 		if errors.IsNotFound(err) {
@@ -549,23 +450,21 @@ func TestIntegrationCVO_gracefulStepDown(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Logf("lock deleted in %s", endTime.Sub(startTime))
-
 	select {
 	case <-time.After(time.Second):
 		t.Fatalf("controller should exit more quickly")
 	case <-done:
 	}
 }
-
 func TestIntegrationCVO_cincinnatiRequest(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if os.Getenv("TEST_INTEGRATION") != "1" {
 		t.Skipf("Integration tests are disabled unless TEST_INTEGRATION=1")
 	}
 	t.Parallel()
-
 	requestQuery := make(chan string, 100)
 	defer close(requestQuery)
-
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		select {
 		case requestQuery <- r.URL.RawQuery:
@@ -575,8 +474,6 @@ func TestIntegrationCVO_cincinnatiRequest(t *testing.T) {
 	}
 	upstreamServer := httptest.NewServer(http.HandlerFunc(handler))
 	defer upstreamServer.Close()
-
-	// use the same client setup as the start command
 	cb, err := newClientBuilder("")
 	if err != nil {
 		t.Fatal(err)
@@ -584,14 +481,8 @@ func TestIntegrationCVO_cincinnatiRequest(t *testing.T) {
 	cfg := cb.RestConfig()
 	kc := cb.KubeClientOrDie("integration-test")
 	client := cb.ClientOrDie("integration-test")
-
 	ns := fmt.Sprintf("e2e-cvo-%s", randutil.String(4))
-
-	if _, err := kc.Core().Namespaces().Create(&v1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: ns,
-		},
-	}); err != nil {
+	if _, err := kc.Core().Namespaces().Create(&v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: ns}}); err != nil {
 		t.Fatal(err)
 	}
 	defer func() {
@@ -602,20 +493,8 @@ func TestIntegrationCVO_cincinnatiRequest(t *testing.T) {
 			t.Logf("failed to delete namespace %s: %v", ns, err)
 		}
 	}()
-
 	id, _ := uuid.NewRandom()
-
-	client.ConfigV1().ClusterVersions().Create(&configv1.ClusterVersion{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: ns,
-		},
-		Spec: configv1.ClusterVersionSpec{
-			Upstream:  configv1.URL(upstreamServer.URL),
-			Channel:   "test-channel",
-			ClusterID: configv1.ClusterID(id.String()),
-		},
-	})
-
+	client.ConfigV1().ClusterVersions().Create(&configv1.ClusterVersion{ObjectMeta: metav1.ObjectMeta{Name: ns}, Spec: configv1.ClusterVersionSpec{Upstream: configv1.URL(upstreamServer.URL), Channel: "test-channel", ClusterID: configv1.ClusterID(id.String())}})
 	dir, err := ioutil.TempDir("", "cvo-test")
 	if err != nil {
 		t.Fatal(err)
@@ -625,9 +504,7 @@ func TestIntegrationCVO_cincinnatiRequest(t *testing.T) {
 		t.Fatal(err)
 	}
 	payloadImage1 := "arbitrary/release:image"
-	retriever := &mapPayloadRetriever{map[string]string{
-		payloadImage1: filepath.Join(dir, "0.0.1"),
-	}}
+	retriever := &mapPayloadRetriever{map[string]string{payloadImage1: filepath.Join(dir, "0.0.1")}}
 	payloadDir := filepath.Join(dir, "payload")
 	if err := os.Mkdir(payloadDir, 0777); err != nil {
 		t.Fatal(err)
@@ -647,7 +524,6 @@ metadata:
 `), 0777); err != nil {
 		t.Fatal(err)
 	}
-
 	options := NewOptions()
 	options.Namespace = ns
 	options.Name = ns
@@ -660,21 +536,17 @@ metadata:
 	if err := controllers.CVO.InitializeFromPayload(); err != nil {
 		t.Fatal(err)
 	}
-
 	worker := cvo.NewSyncWorker(retriever, cvo.NewResourceBuilder(cfg, cfg, nil), 5*time.Second, wait.Backoff{Steps: 3}).(*cvo.SyncWorker)
 	controllers.CVO.SetSyncWorkerForTesting(worker)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	controllers.Start(ctx)
-
 	t.Logf("wait until we observe the cluster version become available")
 	lastCV, err := waitForUpdateAvailable(t, client, ns, false, "0.0.1")
 	if err != nil {
 		t.Logf("latest version:\n%s", printCV(lastCV))
 		t.Fatalf("cluster version never became available: %v", err)
 	}
-
 	t.Logf("wait until we observe the request to the upstream url")
 	actualQuery := ""
 	select {
@@ -696,10 +568,9 @@ metadata:
 		t.Errorf("expected query to be %q, got: %q", e, a)
 	}
 }
-
-// waitForAvailableUpdate checks invariants during an upgrade process. versions is a list of the expected versions that
-// should be seen during update, with the last version being the one we wait to see.
 func waitForUpdateAvailable(t *testing.T, client clientset.Interface, ns string, allowIncrementalFailure bool, versions ...string) (*configv1.ClusterVersion, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var lastCV *configv1.ClusterVersion
 	return lastCV, wait.PollImmediate(200*time.Millisecond, 60*time.Second, func() (bool, error) {
 		cv, err := client.Config().ClusterVersions().Get(ns, metav1.GetOptions{})
@@ -710,33 +581,25 @@ func waitForUpdateAvailable(t *testing.T, client clientset.Interface, ns string,
 			return false, err
 		}
 		lastCV = cv
-
 		if cv.Status.ObservedGeneration > cv.Generation {
 			return false, fmt.Errorf("status generation should never be newer than metadata generation")
 		}
-
 		verifyClusterVersionHistory(t, cv)
-
 		if !allowIncrementalFailure {
 			if failing := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorFailing); failing != nil && failing.Status == configv1.ConditionTrue {
 				return false, fmt.Errorf("operator listed as failing (%s): %s", failing.Reason, failing.Message)
 			}
 		}
-
-		// just wait until the operator is available
 		if len(versions) == 0 {
 			available := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorAvailable)
 			return available != nil && available.Status == configv1.ConditionTrue, nil
 		}
-
 		if len(versions) == 1 {
-			// we should not observe status.generation == metadata.generation without also observing a status history entry
 			if cv.Status.ObservedGeneration == cv.Generation {
 				if len(cv.Status.History) == 0 || cv.Status.History[0].Version != versions[0] {
 					return false, fmt.Errorf("initializing operator should set history and generation at the same time")
 				}
 			}
-
 			if available := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorAvailable); available == nil || available.Status == configv1.ConditionFalse {
 				if progressing := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorProgressing); available != nil && (progressing == nil || progressing.Status != configv1.ConditionTrue) {
 					return false, fmt.Errorf("initializing operator should have progressing if available is false: %#v", progressing)
@@ -757,8 +620,6 @@ func waitForUpdateAvailable(t *testing.T, client clientset.Interface, ns string,
 			}
 			return true, nil
 		}
-
-		// we should not observe status.generation == metadata.generation without also observing a status history entry
 		if cv.Status.ObservedGeneration == cv.Generation {
 			target := versions[len(versions)-1]
 			if cv.Status.Desired.Version != target {
@@ -768,7 +629,6 @@ func waitForUpdateAvailable(t *testing.T, client clientset.Interface, ns string,
 				return false, fmt.Errorf("upgrading operator should set history and generation at the same time")
 			}
 		}
-
 		if available := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorAvailable); available == nil || available.Status == configv1.ConditionFalse {
 			return false, fmt.Errorf("upgrading operator should remain available: %#v", available)
 		}
@@ -781,15 +641,12 @@ func waitForUpdateAvailable(t *testing.T, client clientset.Interface, ns string,
 		if !stringInSlice(versions, cv.Status.History[0].Version) {
 			return false, fmt.Errorf("upgrading operator should have a valid history[0] version %s: %v", cv.Status.Desired.Version, versions)
 		}
-
 		if cv.Status.History[0].Version != versions[len(versions)-1] {
 			return false, nil
 		}
-
 		if failing := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorFailing); failing != nil && failing.Status == configv1.ConditionTrue {
 			return false, fmt.Errorf("operator listed as failing (%s): %s", failing.Reason, failing.Message)
 		}
-
 		progressing := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorProgressing)
 		if cv.Status.History[0].State != configv1.CompletedUpdate {
 			if progressing == nil || progressing.Status != configv1.ConditionTrue {
@@ -797,17 +654,15 @@ func waitForUpdateAvailable(t *testing.T, client clientset.Interface, ns string,
 			}
 			return false, nil
 		}
-
 		if progressing == nil || progressing.Status != configv1.ConditionFalse {
 			return false, fmt.Errorf("upgraded operator should have progressing condition false: %#v", progressing)
 		}
 		return true, nil
 	})
 }
-
-// waitUntilUpgradeFails checks invariants during an upgrade process. versions is a list of the expected versions that
-// should be seen during update, with the last version being the one we wait to see.
 func waitUntilUpgradeFails(t *testing.T, client clientset.Interface, ns string, failingReason, failingMessage, progressingMessage string, versions ...string) (*configv1.ClusterVersion, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var lastCV *configv1.ClusterVersion
 	return lastCV, wait.PollImmediate(200*time.Millisecond, 60*time.Second, func() (bool, error) {
 		cv, err := client.Config().ClusterVersions().Get(ns, metav1.GetOptions{})
@@ -818,50 +673,20 @@ func waitUntilUpgradeFails(t *testing.T, client clientset.Interface, ns string, 
 			return false, err
 		}
 		lastCV = cv
-
 		if cv.Status.ObservedGeneration > cv.Generation {
 			return false, fmt.Errorf("status generation should never be newer than metadata generation")
 		}
-
 		verifyClusterVersionHistory(t, cv)
-
 		if c := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorAvailable); c == nil || c.Status != configv1.ConditionTrue {
 			return false, fmt.Errorf("operator should remain available: %#v", c)
 		}
-
-		// just wait until the operator is failing
 		if len(versions) == 0 {
 			c := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorFailing)
 			return c != nil && c.Status == configv1.ConditionTrue, nil
 		}
-
-		// TODO: add a test for initializing to an error state
-		// if len(versions) == 1 {
-		// 	if available := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorAvailable); available == nil || available.Status == configv1.ConditionFalse {
-		// 		if progressing := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorProgressing); available != nil && (progressing == nil || progressing.Status != configv1.ConditionTrue) {
-		// 			return false, fmt.Errorf("initializing operator should have progressing if available is false: %#v", progressing)
-		// 		}
-		// 		return false, nil
-		// 	}
-		// 	if len(cv.Status.History) == 0 {
-		// 		return false, fmt.Errorf("initializing operator should have history after available goes true")
-		// 	}
-		// 	if cv.Status.History[0].Version != versions[len(versions)-1] {
-		// 		return false, fmt.Errorf("initializing operator should report the target version in history once available")
-		// 	}
-		// 	if cv.Status.History[0].State != configv1.CompletedUpdate {
-		// 		return false, fmt.Errorf("initializing operator should report history completed %#v", cv.Status.History[0])
-		// 	}
-		// 	if progressing := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorProgressing); progressing == nil || progressing.Status == configv1.ConditionTrue {
-		// 		return false, fmt.Errorf("initializing operator should never be available and still progressing or lacking the condition: %#v", progressing)
-		// 	}
-		// 	return true, nil
-		// }
 		if len(versions) == 1 {
 			return false, fmt.Errorf("unimplemented")
 		}
-
-		// we should not observe status.generation == metadata.generation without also observing a status history entry
 		if cv.Status.ObservedGeneration == cv.Generation {
 			target := versions[len(versions)-1]
 			if cv.Status.Desired.Version != target {
@@ -871,13 +696,10 @@ func waitUntilUpgradeFails(t *testing.T, client clientset.Interface, ns string, 
 				return false, fmt.Errorf("upgrading operator should set history and generation at the same time")
 			}
 		}
-
 		if len(cv.Status.History) == 0 {
 			return false, fmt.Errorf("upgrading operator should have at least once history entry")
 		}
 		if len(cv.Status.Desired.Version) == 0 {
-			// if we are downloading the next update, we're allowed to have an empty desired version because we
-			// haven't been able to load the payload
 			if c := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorProgressing); c != nil && c.Status == configv1.ConditionTrue && strings.Contains(c.Message, "downloading update") && c.Reason == "DownloadingUpdate" {
 				return false, nil
 			}
@@ -888,14 +710,12 @@ func waitUntilUpgradeFails(t *testing.T, client clientset.Interface, ns string, 
 		if !stringInSlice(versions, cv.Status.History[0].Version) {
 			return false, fmt.Errorf("upgrading operator should have a valid history[0] version %s: %v", cv.Status.Desired.Version, versions)
 		}
-
 		if cv.Status.History[0].Version != versions[len(versions)-1] {
 			return false, nil
 		}
 		if cv.Status.History[0].State == configv1.CompletedUpdate {
 			return false, fmt.Errorf("upgrading operator to failed image should remain partial: %#v", cv.Status.History)
 		}
-
 		failing := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorFailing)
 		if failing == nil || failing.Status != configv1.ConditionTrue {
 			return false, nil
@@ -916,12 +736,12 @@ func waitUntilUpgradeFails(t *testing.T, client clientset.Interface, ns string, 
 		if !strings.Contains(progressing.Message, progressingMessage) {
 			return false, fmt.Errorf("progressing message mismatch: %s", progressing.Message)
 		}
-
 		return true, nil
 	})
 }
-
 func stringInSlice(slice []string, s string) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, item := range slice {
 		if s == item {
 			return true
@@ -929,8 +749,9 @@ func stringInSlice(slice []string, s string) bool {
 	}
 	return false
 }
-
 func verifyClusterVersionHistory(t *testing.T, cv *configv1.ClusterVersion) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	var previous *configv1.UpdateHistory
 	for i, history := range cv.Status.History {
@@ -952,8 +773,9 @@ func verifyClusterVersionHistory(t *testing.T, cv *configv1.ClusterVersion) {
 		}
 	}
 }
-
 func verifyClusterVersionStatus(t *testing.T, cv *configv1.ClusterVersion, expectedUpdate configv1.Update, expectHistory int) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	if cv.Status.ObservedGeneration != cv.Generation {
 		t.Fatalf("unexpected: %d instead of %d", cv.Status.ObservedGeneration, cv.Generation)
@@ -968,13 +790,7 @@ func verifyClusterVersionStatus(t *testing.T, cv *configv1.ClusterVersion, expec
 	if actual.StartedTime.Time.IsZero() || actual.CompletionTime == nil || actual.CompletionTime.Time.IsZero() || actual.CompletionTime.Time.Before(actual.StartedTime.Time) {
 		t.Fatalf("unexpected: %s -> %s", actual.StartedTime, actual.CompletionTime)
 	}
-	expect := configv1.UpdateHistory{
-		State:          configv1.CompletedUpdate,
-		Version:        expectedUpdate.Version,
-		Image:          expectedUpdate.Image,
-		StartedTime:    actual.StartedTime,
-		CompletionTime: actual.CompletionTime,
-	}
+	expect := configv1.UpdateHistory{State: configv1.CompletedUpdate, Version: expectedUpdate.Version, Image: expectedUpdate.Image, StartedTime: actual.StartedTime, CompletionTime: actual.CompletionTime}
 	if !reflect.DeepEqual(expect, actual) {
 		t.Fatalf("unexpected history: %s", diff.ObjectReflectDiff(expect, actual))
 	}
@@ -985,14 +801,16 @@ func verifyClusterVersionStatus(t *testing.T, cv *configv1.ClusterVersion, expec
 		t.Fatalf("unexpected generation: %#v", cv.Status.ObservedGeneration)
 	}
 }
-
 func verifyReleasePayload(t *testing.T, kc kubernetes.Interface, ns, version, image string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	verifyReleasePayloadConfigMap1(t, kc, ns, version, image)
 	verifyReleasePayloadConfigMap2(t, kc, ns, version, image)
 }
-
 func verifyReleasePayloadConfigMap1(t *testing.T, kc kubernetes.Interface, ns, version, image string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	cm, err := kc.CoreV1().ConfigMaps(ns).Get("config1", metav1.GetOptions{})
 	if err != nil {
@@ -1002,8 +820,9 @@ func verifyReleasePayloadConfigMap1(t *testing.T, kc kubernetes.Interface, ns, v
 		t.Fatalf("unexpected cm/config1 contents: %#v", cm.Data)
 	}
 }
-
 func verifyReleasePayloadConfigMap2(t *testing.T, kc kubernetes.Interface, ns, version, image string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	cm, err := kc.CoreV1().ConfigMaps(ns).Get("config2", metav1.GetOptions{})
 	if err != nil {
@@ -1013,8 +832,9 @@ func verifyReleasePayloadConfigMap2(t *testing.T, kc kubernetes.Interface, ns, v
 		t.Fatalf("unexpected cm/config2 contents: %#v", cm.Data)
 	}
 }
-
 func hasLeaderEvent(events []v1.Event, name string) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, event := range events {
 		if event.Reason == "LeaderElection" && event.InvolvedObject.Name == name {
 			return true
@@ -1022,8 +842,9 @@ func hasLeaderEvent(events []v1.Event, name string) bool {
 	}
 	return false
 }
-
 func printCV(cv *configv1.ClusterVersion) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	data, err := json.MarshalIndent(cv, "", "  ")
 	if err != nil {
 		return fmt.Sprintf("<error: %v>", err)
@@ -1034,9 +855,9 @@ func printCV(cv *configv1.ClusterVersion) string {
 var reVariable = regexp.MustCompile(`\$\([a-zA-Z0-9_\-]+\)`)
 
 func TestCreateContentReplacement(t *testing.T) {
-	replacements := []map[string]string{
-		{"NS": "other"},
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	replacements := []map[string]string{{"NS": "other"}}
 	in := `Some stuff $(NS) that should be $(NS)`
 	out := reVariable.ReplaceAllStringFunc(in, func(key string) string {
 		key = key[2 : len(key)-1]
@@ -1053,8 +874,9 @@ func TestCreateContentReplacement(t *testing.T) {
 		t.Fatal(out)
 	}
 }
-
 func createContent(baseDir string, content map[string]interface{}, replacements ...map[string]string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := os.MkdirAll(baseDir, 0750); err != nil {
 		return err
 	}
@@ -1090,11 +912,11 @@ func createContent(baseDir string, content map[string]interface{}, replacements 
 	return nil
 }
 
-type mapPayloadRetriever struct {
-	Paths map[string]string
-}
+type mapPayloadRetriever struct{ Paths map[string]string }
 
 func (r *mapPayloadRetriever) RetrievePayload(ctx context.Context, update configv1.Update) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	path, ok := r.Paths[update.Image]
 	if !ok {
 		return "", fmt.Errorf("no image found for %q", update.Image)
