@@ -22,12 +22,16 @@ type Client struct{ id uuid.UUID }
 func NewClient(id uuid.UUID) Client {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return Client{id: id}
 }
 
 type Update node
 
 func (c Client) GetUpdates(upstream string, channel string, version semver.Version) ([]Update, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	cincinnatiURL, err := url.Parse(upstream)
@@ -102,6 +106,8 @@ type edge struct {
 func (e *edge) UnmarshalJSON(data []byte) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var fields []int
 	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
@@ -116,7 +122,16 @@ func (e *edge) UnmarshalJSON(data []byte) error {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

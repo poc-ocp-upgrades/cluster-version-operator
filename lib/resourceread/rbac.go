@@ -15,6 +15,8 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := rbacv1.AddToScheme(rbacScheme); err != nil {
 		panic(err)
 	}
@@ -23,6 +25,8 @@ func init() {
 	}
 }
 func ReadClusterRoleBindingV1OrDie(objBytes []byte) *rbacv1.ClusterRoleBinding {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(rbacCodecs.UniversalDecoder(rbacv1.SchemeGroupVersion), objBytes)
@@ -34,6 +38,8 @@ func ReadClusterRoleBindingV1OrDie(objBytes []byte) *rbacv1.ClusterRoleBinding {
 func ReadClusterRoleV1OrDie(objBytes []byte) *rbacv1.ClusterRole {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(rbacCodecs.UniversalDecoder(rbacv1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)
@@ -43,6 +49,8 @@ func ReadClusterRoleV1OrDie(objBytes []byte) *rbacv1.ClusterRole {
 func ReadRoleBindingV1OrDie(objBytes []byte) *rbacv1.RoleBinding {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(rbacCodecs.UniversalDecoder(rbacv1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)
@@ -50,6 +58,8 @@ func ReadRoleBindingV1OrDie(objBytes []byte) *rbacv1.RoleBinding {
 	return requiredObj.(*rbacv1.RoleBinding)
 }
 func ReadRoleV1OrDie(objBytes []byte) *rbacv1.Role {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(rbacCodecs.UniversalDecoder(rbacv1.SchemeGroupVersion), objBytes)

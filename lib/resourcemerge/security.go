@@ -8,6 +8,8 @@ import (
 func EnsureSecurityContextConstraints(modified *bool, existing *securityv1.SecurityContextConstraints, required securityv1.SecurityContextConstraints) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	EnsureObjectMeta(modified, &existing.ObjectMeta, required.ObjectMeta)
 	setInt32Ptr(modified, &existing.Priority, required.Priority)
 	setBool(modified, &existing.AllowPrivilegedContainer, required.AllowPrivilegedContainer)

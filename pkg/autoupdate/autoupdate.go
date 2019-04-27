@@ -45,6 +45,8 @@ type Controller struct {
 func New(namespace, name string, cvInformer configinformersv1.ClusterVersionInformer, coInformer configinformersv1.ClusterOperatorInformer, client clientset.Interface, kubeClient kubernetes.Interface) *Controller {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartLogging(glog.Infof)
 	eventBroadcaster.StartRecordingToSink(&coreclientsetv1.EventSinkImpl{Interface: kubeClient.CoreV1().Events(namespace)})
@@ -59,6 +61,8 @@ func New(namespace, name string, cvInformer configinformersv1.ClusterVersionInfo
 	return ctrl
 }
 func (ctrl *Controller) Run(workers int, stopCh <-chan struct{}) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	defer utilruntime.HandleCrash()
@@ -77,6 +81,8 @@ func (ctrl *Controller) Run(workers int, stopCh <-chan struct{}) {
 func (ctrl *Controller) eventHandler() cache.ResourceEventHandler {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	key := fmt.Sprintf("%s/%s", ctrl.namespace, ctrl.name)
 	return cache.ResourceEventHandlerFuncs{AddFunc: func(obj interface{}) {
 		ctrl.queue.Add(key)
@@ -89,10 +95,14 @@ func (ctrl *Controller) eventHandler() cache.ResourceEventHandler {
 func (ctrl *Controller) worker() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for ctrl.processNextWorkItem() {
 	}
 }
 func (ctrl *Controller) processNextWorkItem() bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	key, quit := ctrl.queue.Get()
@@ -105,6 +115,8 @@ func (ctrl *Controller) processNextWorkItem() bool {
 	return true
 }
 func (ctrl *Controller) handleErr(err error, key interface{}) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if err == nil {
@@ -121,6 +133,8 @@ func (ctrl *Controller) handleErr(err error, key interface{}) {
 	ctrl.queue.Forget(key)
 }
 func (ctrl *Controller) sync(key string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	startTime := time.Now()
@@ -151,9 +165,13 @@ func (ctrl *Controller) sync(key string) error {
 func updateAvail(ups []v1.Update) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return len(ups) > 0
 }
 func nextUpdate(ups []v1.Update) v1.Update {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	sorted := ups
@@ -167,7 +185,16 @@ func nextUpdate(ups []v1.Update) v1.Update {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

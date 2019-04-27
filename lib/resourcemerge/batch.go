@@ -8,6 +8,8 @@ import (
 func EnsureJob(modified *bool, existing *batchv1.Job, required batchv1.Job) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	EnsureObjectMeta(modified, &existing.ObjectMeta, required.ObjectMeta)
 	if existing.Spec.Selector == nil {
 		*modified = true

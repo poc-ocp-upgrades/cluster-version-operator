@@ -15,6 +15,8 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := apiregv1beta1.AddToScheme(apiRegScheme); err != nil {
 		panic(err)
 	}
@@ -23,6 +25,8 @@ func init() {
 	}
 }
 func ReadAPIServiceV1OrDie(objBytes []byte) *apiregv1.APIService {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(apiRegCodecs.UniversalDecoder(apiregv1.SchemeGroupVersion), objBytes)

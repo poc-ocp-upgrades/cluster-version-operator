@@ -12,6 +12,8 @@ import (
 func ApplyJob(client batchclientv1.JobsGetter, required *batchv1.Job) (*batchv1.Job, bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	existing, err := client.Jobs(required.Namespace).Get(required.Name, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		actual, err := client.Jobs(required.Namespace).Create(required)

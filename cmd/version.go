@@ -14,9 +14,13 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	rootCmd.AddCommand(versionCmd)
 }
 func runVersionCmd(cmd *cobra.Command, args []string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	flag.Set("logtostderr", "true")

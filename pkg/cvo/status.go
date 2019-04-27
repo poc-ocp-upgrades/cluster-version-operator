@@ -20,6 +20,8 @@ import (
 func mergeEqualVersions(current *configv1.UpdateHistory, desired configv1.Update) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(desired.Image) > 0 && desired.Image == current.Image {
 		if len(desired.Version) == 0 {
 			return true
@@ -38,6 +40,8 @@ func mergeEqualVersions(current *configv1.UpdateHistory, desired configv1.Update
 	return false
 }
 func mergeOperatorHistory(config *configv1.ClusterVersion, desired configv1.Update, now metav1.Time, completed bool) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(desired.Image) == 0 {
@@ -83,6 +87,8 @@ func mergeOperatorHistory(config *configv1.ClusterVersion, desired configv1.Upda
 func pruneStatusHistory(config *configv1.ClusterVersion, maxHistory int) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(config.Status.History) <= maxHistory {
 		return
 	}
@@ -101,6 +107,8 @@ func pruneStatusHistory(config *configv1.ClusterVersion, maxHistory int) {
 const ClusterVersionInvalid configv1.ClusterStatusConditionType = "Invalid"
 
 func (optr *Operator) syncStatus(original, config *configv1.ClusterVersion, status *SyncWorkerStatus, validationErrs field.ErrorList) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	glog.V(5).Infof("Synchronizing errs=%#v status=%#v", validationErrs, status)
@@ -197,6 +205,8 @@ func (optr *Operator) syncStatus(original, config *configv1.ClusterVersion, stat
 func convertErrorToProgressing(history []configv1.UpdateHistory, now time.Time, status *SyncWorkerStatus) (reason string, message string, ok bool) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(history) == 0 || status.Failure == nil || status.Reconciling || status.LastProgress.IsZero() {
 		return "", "", false
 	}
@@ -213,6 +223,8 @@ func convertErrorToProgressing(history []configv1.UpdateHistory, now time.Time, 
 	return "", "", false
 }
 func (optr *Operator) syncFailingStatus(original *configv1.ClusterVersion, ierr error) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if ierr == nil {
@@ -243,6 +255,8 @@ func (optr *Operator) syncFailingStatus(original *configv1.ClusterVersion, ierr 
 	return ierr
 }
 func applyClusterVersionStatus(client configclientv1.ClusterVersionsGetter, required, original *configv1.ClusterVersion) (*configv1.ClusterVersion, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if original != nil && equality.Semantic.DeepEqual(&original.Status, &required.Status) {

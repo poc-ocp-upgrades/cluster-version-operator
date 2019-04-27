@@ -10,6 +10,8 @@ import (
 func Test_statusWrapper_Report(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := []struct {
 		name		string
 		previous	SyncWorkerStatus
@@ -49,6 +51,8 @@ func Test_statusWrapper_Report(t *testing.T) {
 	}
 }
 func Test_runThrottledStatusNotifier(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	stopCh := make(chan struct{})

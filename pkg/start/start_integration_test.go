@@ -142,6 +142,8 @@ var (
 func TestIntegrationCVO_initializeAndUpgrade(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if os.Getenv("TEST_INTEGRATION") != "1" {
 		t.Skipf("Integration tests are disabled unless TEST_INTEGRATION=1")
 	}
@@ -268,6 +270,8 @@ func TestIntegrationCVO_initializeAndUpgrade(t *testing.T) {
 func TestIntegrationCVO_initializeAndHandleError(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if os.Getenv("TEST_INTEGRATION") != "1" {
 		t.Skipf("Integration tests are disabled unless TEST_INTEGRATION=1")
 	}
@@ -366,6 +370,8 @@ func TestIntegrationCVO_initializeAndHandleError(t *testing.T) {
 func TestIntegrationCVO_gracefulStepDown(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if os.Getenv("TEST_INTEGRATION") != "1" {
 		t.Skipf("Integration tests are disabled unless TEST_INTEGRATION=1")
 	}
@@ -457,6 +463,8 @@ func TestIntegrationCVO_gracefulStepDown(t *testing.T) {
 	}
 }
 func TestIntegrationCVO_cincinnatiRequest(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if os.Getenv("TEST_INTEGRATION") != "1" {
@@ -571,6 +579,8 @@ metadata:
 func waitForUpdateAvailable(t *testing.T, client clientset.Interface, ns string, allowIncrementalFailure bool, versions ...string) (*configv1.ClusterVersion, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var lastCV *configv1.ClusterVersion
 	return lastCV, wait.PollImmediate(200*time.Millisecond, 60*time.Second, func() (bool, error) {
 		cv, err := client.Config().ClusterVersions().Get(ns, metav1.GetOptions{})
@@ -663,6 +673,8 @@ func waitForUpdateAvailable(t *testing.T, client clientset.Interface, ns string,
 func waitUntilUpgradeFails(t *testing.T, client clientset.Interface, ns string, failingReason, failingMessage, progressingMessage string, versions ...string) (*configv1.ClusterVersion, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var lastCV *configv1.ClusterVersion
 	return lastCV, wait.PollImmediate(200*time.Millisecond, 60*time.Second, func() (bool, error) {
 		cv, err := client.Config().ClusterVersions().Get(ns, metav1.GetOptions{})
@@ -742,6 +754,8 @@ func waitUntilUpgradeFails(t *testing.T, client clientset.Interface, ns string, 
 func stringInSlice(slice []string, s string) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, item := range slice {
 		if s == item {
 			return true
@@ -750,6 +764,8 @@ func stringInSlice(slice []string, s string) bool {
 	return false
 }
 func verifyClusterVersionHistory(t *testing.T, cv *configv1.ClusterVersion) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	t.Helper()
@@ -774,6 +790,8 @@ func verifyClusterVersionHistory(t *testing.T, cv *configv1.ClusterVersion) {
 	}
 }
 func verifyClusterVersionStatus(t *testing.T, cv *configv1.ClusterVersion, expectedUpdate configv1.Update, expectHistory int) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	t.Helper()
@@ -804,11 +822,15 @@ func verifyClusterVersionStatus(t *testing.T, cv *configv1.ClusterVersion, expec
 func verifyReleasePayload(t *testing.T, kc kubernetes.Interface, ns, version, image string) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	verifyReleasePayloadConfigMap1(t, kc, ns, version, image)
 	verifyReleasePayloadConfigMap2(t, kc, ns, version, image)
 }
 func verifyReleasePayloadConfigMap1(t *testing.T, kc kubernetes.Interface, ns, version, image string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	t.Helper()
@@ -823,6 +845,8 @@ func verifyReleasePayloadConfigMap1(t *testing.T, kc kubernetes.Interface, ns, v
 func verifyReleasePayloadConfigMap2(t *testing.T, kc kubernetes.Interface, ns, version, image string) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	cm, err := kc.CoreV1().ConfigMaps(ns).Get("config2", metav1.GetOptions{})
 	if err != nil {
@@ -835,6 +859,8 @@ func verifyReleasePayloadConfigMap2(t *testing.T, kc kubernetes.Interface, ns, v
 func hasLeaderEvent(events []v1.Event, name string) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, event := range events {
 		if event.Reason == "LeaderElection" && event.InvolvedObject.Name == name {
 			return true
@@ -843,6 +869,8 @@ func hasLeaderEvent(events []v1.Event, name string) bool {
 	return false
 }
 func printCV(cv *configv1.ClusterVersion) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	data, err := json.MarshalIndent(cv, "", "  ")
@@ -855,6 +883,8 @@ func printCV(cv *configv1.ClusterVersion) string {
 var reVariable = regexp.MustCompile(`\$\([a-zA-Z0-9_\-]+\)`)
 
 func TestCreateContentReplacement(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	replacements := []map[string]string{{"NS": "other"}}
@@ -875,6 +905,8 @@ func TestCreateContentReplacement(t *testing.T) {
 	}
 }
 func createContent(baseDir string, content map[string]interface{}, replacements ...map[string]string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if err := os.MkdirAll(baseDir, 0750); err != nil {
@@ -915,6 +947,8 @@ func createContent(baseDir string, content map[string]interface{}, replacements 
 type mapPayloadRetriever struct{ Paths map[string]string }
 
 func (r *mapPayloadRetriever) RetrievePayload(ctx context.Context, update configv1.Update) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	path, ok := r.Paths[update.Image]

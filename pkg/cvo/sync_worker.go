@@ -43,6 +43,8 @@ type SyncWork struct {
 func (w SyncWork) Empty() bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return len(w.Desired.Image) == 0
 }
 
@@ -60,6 +62,8 @@ type SyncWorkerStatus struct {
 }
 
 func (w SyncWorkerStatus) DeepCopy() *SyncWorkerStatus {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return &w
@@ -83,14 +87,20 @@ type SyncWorker struct {
 func NewSyncWorker(retriever PayloadRetriever, builder payload.ResourceBuilder, reconcileInterval time.Duration, backoff wait.Backoff) ConfigSyncWorker {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &SyncWorker{retriever: retriever, builder: builder, backoff: backoff, minimumReconcileInterval: reconcileInterval, notify: make(chan struct{}, 1), report: make(chan SyncWorkerStatus, 500)}
 }
 func (w *SyncWorker) StatusCh() <-chan SyncWorkerStatus {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return w.report
 }
 func (w *SyncWorker) Update(generation int64, desired configv1.Update, overrides []configv1.ComponentOverride, state payload.State) *SyncWorkerStatus {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	w.lock.Lock()
@@ -115,6 +125,8 @@ func (w *SyncWorker) Update(generation int64, desired configv1.Update, overrides
 	return w.status.DeepCopy()
 }
 func (w *SyncWorker) Start(ctx context.Context, maxWorkers int) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	glog.V(5).Infof("Starting sync worker")
@@ -194,6 +206,8 @@ type statusWrapper struct {
 func (w *statusWrapper) Report(status SyncWorkerStatus) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	p := w.previousStatus
 	if p.Failure != nil && status.Failure == nil {
 		if p.Actual == status.Actual {
@@ -209,6 +223,8 @@ func (w *statusWrapper) Report(status SyncWorkerStatus) {
 	w.w.updateStatus(status)
 }
 func (w *SyncWorker) calculateNext(work *SyncWork) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	w.lock.Lock()
@@ -239,9 +255,13 @@ func (w *SyncWorker) calculateNext(work *SyncWork) bool {
 func equalUpdate(a, b configv1.Update) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return a.Image == b.Image
 }
 func equalSyncWork(a, b *SyncWork) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if a == b {
@@ -253,6 +273,8 @@ func equalSyncWork(a, b *SyncWork) bool {
 	return equalUpdate(a.Desired, b.Desired) && reflect.DeepEqual(a.Overrides, b.Overrides)
 }
 func (w *SyncWorker) updateStatus(update SyncWorkerStatus) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	w.lock.Lock()
@@ -270,6 +292,8 @@ func (w *SyncWorker) updateStatus(update SyncWorkerStatus) {
 func (w *SyncWorker) Desired() configv1.Update {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	w.lock.Lock()
 	defer w.lock.Unlock()
 	if w.work == nil {
@@ -280,11 +304,15 @@ func (w *SyncWorker) Desired() configv1.Update {
 func (w *SyncWorker) Status() *SyncWorkerStatus {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	w.lock.Lock()
 	defer w.lock.Unlock()
 	return w.status.DeepCopy()
 }
 func (w *SyncWorker) syncOnce(ctx context.Context, work *SyncWork, maxWorkers int, reporter StatusReporter) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	glog.V(4).Infof("Running sync %s on generation %d in state %s at attempt %d", versionString(work.Desired), work.Generation, work.State, work.Attempt)
@@ -309,6 +337,8 @@ func (w *SyncWorker) syncOnce(ctx context.Context, work *SyncWork, maxWorkers in
 	return w.apply(ctx, w.payload, work, maxWorkers, reporter)
 }
 func (w *SyncWorker) apply(ctx context.Context, payloadUpdate *payload.Update, work *SyncWork, maxWorkers int, reporter StatusReporter) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	update := configv1.Update{Version: payloadUpdate.ReleaseVersion, Image: payloadUpdate.ReleaseImage}
@@ -372,12 +402,16 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	prometheus.MustRegister(metricPayload)
 }
 
 type errCanceled struct{ err error }
 
 func (e errCanceled) Error() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return e.err.Error()
@@ -396,11 +430,15 @@ type consistentReporter struct {
 func (r *consistentReporter) Inc() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	r.lock.Lock()
 	defer r.lock.Unlock()
 	r.done++
 }
 func (r *consistentReporter) Update() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	r.lock.Lock()
@@ -415,6 +453,8 @@ func (r *consistentReporter) Update() {
 func (r *consistentReporter) Error(err error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	r.lock.Lock()
 	defer r.lock.Unlock()
 	copied := r.status
@@ -426,6 +466,8 @@ func (r *consistentReporter) Error(err error) {
 	r.reporter.Report(copied)
 }
 func (r *consistentReporter) Errors(errs []error) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	err := summarizeTaskGraphErrors(errs)
@@ -443,11 +485,15 @@ func (r *consistentReporter) Errors(errs []error) error {
 func (r *consistentReporter) CancelError() error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	r.lock.Lock()
 	defer r.lock.Unlock()
 	return errCanceled{fmt.Errorf("update was cancelled at %d/%d", r.done, r.total)}
 }
 func (r *consistentReporter) Complete() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	r.lock.Lock()
@@ -464,6 +510,8 @@ func (r *consistentReporter) Complete() {
 func isCancelledError(err error) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err == nil {
 		return false
 	}
@@ -471,6 +519,8 @@ func isCancelledError(err error) bool {
 	return ok
 }
 func summarizeTaskGraphErrors(errs []error) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	err := errors.FilterOut(errors.NewAggregate(errs), isCancelledError)
@@ -509,6 +559,8 @@ func summarizeTaskGraphErrors(errs []error) error {
 func newClusterOperatorsNotAvailable(errs []error) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	names := make([]string, 0, len(errs))
 	for _, err := range errs {
 		uErr, ok := err.(*payload.UpdateError)
@@ -533,6 +585,8 @@ func newClusterOperatorsNotAvailable(errs []error) error {
 func uniqueStrings(arr []string) []string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var last int
 	for i := 1; i < len(arr); i++ {
 		if arr[i] == arr[last] {
@@ -549,6 +603,8 @@ func uniqueStrings(arr []string) []string {
 	return arr[:last]
 }
 func newMultipleError(errs []error) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(errs) == 0 {
@@ -571,6 +627,8 @@ func newMultipleError(errs []error) error {
 func getOverrideForManifest(overrides []configv1.ComponentOverride, manifest *lib.Manifest) (configv1.ComponentOverride, bool) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for idx, ov := range overrides {
 		kind, namespace, name := manifest.GVK.Kind, manifest.Object().GetNamespace(), manifest.Object().GetName()
 		if ov.Kind == kind && (namespace == "" || ov.Namespace == namespace) && ov.Name == name {
@@ -585,12 +643,16 @@ var ownerKind = configv1.SchemeGroupVersion.WithKind("ClusterVersion")
 func ownerRefModifier(config *configv1.ClusterVersion) resourcebuilder.MetaV1ObjectModifierFunc {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	oref := metav1.NewControllerRef(config, ownerKind)
 	return func(obj metav1.Object) {
 		obj.SetOwnerReferences([]metav1.OwnerReference{*oref})
 	}
 }
 func contextIsCancelled(ctx context.Context) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	select {
@@ -601,6 +663,8 @@ func contextIsCancelled(ctx context.Context) bool {
 	}
 }
 func runThrottledStatusNotifier(stopCh <-chan struct{}, interval time.Duration, bucket int, ch <-chan SyncWorkerStatus, fn func()) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	throttle := rate.NewLimiter(rate.Every(interval), bucket)

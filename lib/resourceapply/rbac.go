@@ -12,6 +12,8 @@ import (
 func ApplyClusterRoleBinding(client rbacclientv1.ClusterRoleBindingsGetter, required *rbacv1.ClusterRoleBinding) (*rbacv1.ClusterRoleBinding, bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	existing, err := client.ClusterRoleBindings().Get(required.Name, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		actual, err := client.ClusterRoleBindings().Create(required)
@@ -32,6 +34,8 @@ func ApplyClusterRoleBinding(client rbacclientv1.ClusterRoleBindingsGetter, requ
 	return actual, true, err
 }
 func ApplyClusterRole(client rbacclientv1.ClusterRolesGetter, required *rbacv1.ClusterRole) (*rbacv1.ClusterRole, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	existing, err := client.ClusterRoles().Get(required.Name, metav1.GetOptions{})
@@ -56,6 +60,8 @@ func ApplyClusterRole(client rbacclientv1.ClusterRolesGetter, required *rbacv1.C
 func ApplyRoleBinding(client rbacclientv1.RoleBindingsGetter, required *rbacv1.RoleBinding) (*rbacv1.RoleBinding, bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	existing, err := client.RoleBindings(required.Namespace).Get(required.Name, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		actual, err := client.RoleBindings(required.Namespace).Create(required)
@@ -76,6 +82,8 @@ func ApplyRoleBinding(client rbacclientv1.RoleBindingsGetter, required *rbacv1.R
 	return actual, true, err
 }
 func ApplyRole(client rbacclientv1.RolesGetter, required *rbacv1.Role) (*rbacv1.Role, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	existing, err := client.Roles(required.Namespace).Get(required.Name, metav1.GetOptions{})

@@ -8,6 +8,8 @@ import (
 func EnsureClusterVersion(modified *bool, existing *configv1.ClusterVersion, required configv1.ClusterVersion) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	EnsureObjectMeta(modified, &existing.ObjectMeta, required.ObjectMeta)
 	if !equality.Semantic.DeepEqual(existing.Spec.Upstream, required.Spec.Upstream) {
 		*modified = true
@@ -32,6 +34,8 @@ func EnsureClusterVersion(modified *bool, existing *configv1.ClusterVersion, req
 	}
 }
 func EnsureClusterVersionStatus(modified *bool, existing *configv1.ClusterVersion, required configv1.ClusterVersion) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if !equality.Semantic.DeepEqual(existing.Status, required.Status) {

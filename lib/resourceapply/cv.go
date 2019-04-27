@@ -13,6 +13,8 @@ import (
 func ApplyClusterVersion(client configclientv1.ClusterVersionsGetter, required *configv1.ClusterVersion) (*configv1.ClusterVersion, bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	existing, err := client.ClusterVersions().Get(required.Name, metav1.GetOptions{})
 	if errors.IsNotFound(err) {
 		actual, err := client.ClusterVersions().Create(required)
@@ -33,6 +35,8 @@ func ApplyClusterVersion(client configclientv1.ClusterVersionsGetter, required *
 	return actual, true, err
 }
 func ApplyClusterVersionFromCache(lister configlistersv1.ClusterVersionLister, client configclientv1.ClusterVersionsGetter, required *configv1.ClusterVersion) (*configv1.ClusterVersion, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	obj, err := lister.Get(required.Name)

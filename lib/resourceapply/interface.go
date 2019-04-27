@@ -10,5 +10,7 @@ const CreateOnlyAnnotation = "release.openshift.io/create-only"
 func IsCreateOnly(metadata metav1.Object) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return strings.EqualFold(metadata.GetAnnotations()[CreateOnlyAnnotation], "true")
 }

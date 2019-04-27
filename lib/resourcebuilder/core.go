@@ -18,9 +18,13 @@ type serviceAccountBuilder struct {
 func newServiceAccountBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &serviceAccountBuilder{client: coreclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *serviceAccountBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -28,10 +32,14 @@ func (b *serviceAccountBuilder) WithMode(m Mode) Interface {
 func (b *serviceAccountBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *serviceAccountBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	serviceAccount := resourceread.ReadServiceAccountV1OrDie(b.raw)
@@ -51,9 +59,13 @@ type configMapBuilder struct {
 func newConfigMapBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &configMapBuilder{client: coreclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *configMapBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -61,10 +73,14 @@ func (b *configMapBuilder) WithMode(m Mode) Interface {
 func (b *configMapBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *configMapBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	configMap := resourceread.ReadConfigMapV1OrDie(b.raw)
@@ -84,9 +100,13 @@ type namespaceBuilder struct {
 func newNamespaceBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &namespaceBuilder{client: coreclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *namespaceBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -94,10 +114,14 @@ func (b *namespaceBuilder) WithMode(m Mode) Interface {
 func (b *namespaceBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *namespaceBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	namespace := resourceread.ReadNamespaceV1OrDie(b.raw)
@@ -117,9 +141,13 @@ type serviceBuilder struct {
 func newServiceBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &serviceBuilder{client: coreclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *serviceBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -127,10 +155,14 @@ func (b *serviceBuilder) WithMode(m Mode) Interface {
 func (b *serviceBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *serviceBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	service := resourceread.ReadServiceV1OrDie(b.raw)

@@ -16,9 +16,13 @@ import (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	klog.InitFlags(flag.CommandLine)
 }
 func TestParseManifests(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tests := []struct {
@@ -120,6 +124,8 @@ data:
 	}
 }
 func TestManifestsFromFiles(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tests := []struct {
@@ -225,6 +231,8 @@ type dir struct {
 }
 
 func setupTestFS(t *testing.T, d dir) (string, func() error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	root, err := ioutil.TempDir("", "test")

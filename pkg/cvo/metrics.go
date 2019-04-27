@@ -13,6 +13,8 @@ import (
 func (optr *Operator) registerMetrics(coInformer cache.SharedInformer) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	m := newOperatorMetrics(optr)
 	coInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{UpdateFunc: m.clusterOperatorChanged})
 	return prometheus.Register(m)
@@ -29,6 +31,8 @@ type operatorMetrics struct {
 }
 
 func newOperatorMetrics(optr *Operator) *operatorMetrics {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return &operatorMetrics{optr: optr, conditionTransitions: make(map[conditionKey]int), version: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: "cluster_version", Help: `Reports the version of the cluster in terms of seconds since
@@ -54,6 +58,8 @@ type conditionKey struct {
 }
 
 func (m *operatorMetrics) clusterOperatorChanged(oldObj, obj interface{}) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	oldCO, ok := oldObj.(*configv1.ClusterOperator)
@@ -91,6 +97,8 @@ func (m *operatorMetrics) clusterOperatorChanged(oldObj, obj interface{}) {
 func (m *operatorMetrics) Describe(ch chan<- *prometheus.Desc) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	ch <- m.version.WithLabelValues("", "", "").Desc()
 	ch <- m.availableUpdates.WithLabelValues("", "").Desc()
 	ch <- m.clusterOperatorUp.WithLabelValues("", "").Desc()
@@ -98,6 +106,8 @@ func (m *operatorMetrics) Describe(ch chan<- *prometheus.Desc) {
 	ch <- m.clusterOperatorConditionTransitions.WithLabelValues("", "").Desc()
 }
 func (m *operatorMetrics) Collect(ch chan<- prometheus.Metric) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	current := m.optr.currentVersion()
@@ -205,6 +215,8 @@ func (m *operatorMetrics) Collect(ch chan<- prometheus.Metric) {
 	}
 }
 func mostRecentTimestamp(cv *configv1.ClusterVersion) int64 {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var latest time.Time

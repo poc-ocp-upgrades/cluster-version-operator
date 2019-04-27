@@ -23,9 +23,13 @@ type jobBuilder struct {
 func newJobBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &jobBuilder{client: batchclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *jobBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -33,10 +37,14 @@ func (b *jobBuilder) WithMode(m Mode) Interface {
 func (b *jobBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *jobBuilder) Do(ctx context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	job := resourceread.ReadJobV1OrDie(b.raw)
@@ -53,6 +61,8 @@ func (b *jobBuilder) Do(ctx context.Context) error {
 	return nil
 }
 func WaitForJobCompletion(ctx context.Context, client batchclientv1.JobsGetter, job *batchv1.Job) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return wait.PollImmediateUntil(defaultObjectPollInterval, func() (bool, error) {

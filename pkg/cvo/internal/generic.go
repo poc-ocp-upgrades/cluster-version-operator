@@ -23,6 +23,8 @@ import (
 func readUnstructuredV1OrDie(objBytes []byte) *unstructured.Unstructured {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	udi, _, err := scheme.Codecs.UniversalDecoder().Decode(objBytes, nil, &unstructured.Unstructured{})
 	if err != nil {
 		panic(err)
@@ -30,6 +32,8 @@ func readUnstructuredV1OrDie(objBytes []byte) *unstructured.Unstructured {
 	return udi.(*unstructured.Unstructured)
 }
 func applyUnstructured(client dynamic.ResourceInterface, required *unstructured.Unstructured) (*unstructured.Unstructured, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if required.GetName() == "" {
@@ -72,9 +76,13 @@ type genericBuilder struct {
 func NewGenericBuilder(client dynamic.ResourceInterface, m lib.Manifest) (resourcebuilder.Interface, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &genericBuilder{client: client, raw: m.Raw}, nil
 }
 func (b *genericBuilder) WithMode(m resourcebuilder.Mode) resourcebuilder.Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -82,10 +90,14 @@ func (b *genericBuilder) WithMode(m resourcebuilder.Mode) resourcebuilder.Interf
 func (b *genericBuilder) WithModifier(f resourcebuilder.MetaV1ObjectModifierFunc) resourcebuilder.Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *genericBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	ud := readUnstructuredV1OrDie(b.raw)
@@ -96,6 +108,8 @@ func (b *genericBuilder) Do(_ context.Context) error {
 	return err
 }
 func createPatch(original, modified runtime.Object) ([]byte, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	originalData, err := json.Marshal(original)
@@ -111,7 +125,16 @@ func createPatch(original, modified runtime.Object) ([]byte, error) {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

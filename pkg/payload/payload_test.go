@@ -16,6 +16,8 @@ import (
 func Test_loadUpdatePayload(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	type args struct {
 		dir		string
 		releaseImage	string
@@ -40,6 +42,8 @@ func Test_loadUpdatePayload(t *testing.T) {
 	}
 }
 func mustRead(path string) []byte {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	data, err := ioutil.ReadFile(path)

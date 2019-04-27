@@ -18,9 +18,13 @@ type apiServiceBuilder struct {
 func newAPIServiceBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &apiServiceBuilder{client: apiregclientv1.NewForConfigOrDie(config), raw: m.Raw}
 }
 func (b *apiServiceBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -28,10 +32,14 @@ func (b *apiServiceBuilder) WithMode(m Mode) Interface {
 func (b *apiServiceBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *apiServiceBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	apiService := resourceread.ReadAPIServiceV1OrDie(b.raw)

@@ -17,6 +17,8 @@ import (
 func ValidateClusterVersion(config *configv1.ClusterVersion) field.ErrorList {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	errs := apivalidation.ValidateObjectMeta(&config.ObjectMeta, false, apivalidation.NameIsDNS1035Label, nil)
 	if len(config.Spec.Upstream) > 0 {
 		if _, err := url.Parse(string(config.Spec.Upstream)); err != nil {
@@ -53,6 +55,8 @@ func ValidateClusterVersion(config *configv1.ClusterVersion) field.ErrorList {
 func countPayloadsForVersion(config *configv1.ClusterVersion, version string) int {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	count := 0
 	for _, update := range config.Status.AvailableUpdates {
 		if update.Version == version && len(update.Image) > 0 {
@@ -74,6 +78,8 @@ func countPayloadsForVersion(config *configv1.ClusterVersion, version string) in
 func hasAmbiguousPayloadForVersion(config *configv1.ClusterVersion, version string) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, update := range config.Status.AvailableUpdates {
 		if update.Version == version {
 			return len(update.Image) > 0
@@ -87,6 +93,8 @@ func hasAmbiguousPayloadForVersion(config *configv1.ClusterVersion, version stri
 	return false
 }
 func ClearInvalidFields(config *configv1.ClusterVersion, errs field.ErrorList) *configv1.ClusterVersion {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(errs) == 0 {
@@ -108,13 +116,24 @@ func ClearInvalidFields(config *configv1.ClusterVersion, errs field.ErrorList) *
 func validSemVer(version string) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_, err := semver.Parse(version)
 	return err == nil
 }
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

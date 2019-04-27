@@ -21,12 +21,16 @@ import (
 func (optr *Operator) defaultPayloadDir() string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(optr.payloadDir) == 0 {
 		return payload.DefaultPayloadDir
 	}
 	return optr.payloadDir
 }
 func (optr *Operator) defaultPayloadRetriever() PayloadRetriever {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return &payloadRetriever{kubeClient: optr.kubeClient, operatorName: optr.name, releaseImage: optr.releaseImage, namespace: optr.namespace, nodeName: optr.nodename, payloadDir: optr.defaultPayloadDir(), workingDir: targetUpdatePayloadsDir}
@@ -49,6 +53,8 @@ type payloadRetriever struct {
 func (r *payloadRetriever) RetrievePayload(ctx context.Context, update configv1.Update) (string, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if r.releaseImage == update.Image {
 		return r.payloadDir, nil
 	}
@@ -62,6 +68,8 @@ func (r *payloadRetriever) RetrievePayload(ctx context.Context, update configv1.
 	return tdir, nil
 }
 func (r *payloadRetriever) targetUpdatePayloadDir(ctx context.Context, update configv1.Update) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	hash := md5.New()
@@ -81,6 +89,8 @@ func (r *payloadRetriever) targetUpdatePayloadDir(ctx context.Context, update co
 	return tdir, nil
 }
 func (r *payloadRetriever) fetchUpdatePayloadToDir(ctx context.Context, dir string, update configv1.Update) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var (
@@ -104,6 +114,8 @@ func (r *payloadRetriever) fetchUpdatePayloadToDir(ctx context.Context, dir stri
 func copyPayloadCmd(tdir string) string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var (
 		fromCVOPath	= filepath.Join(payload.DefaultPayloadDir, payload.CVOManifestDir)
 		toCVOPath	= filepath.Join(tdir, payload.CVOManifestDir)
@@ -117,6 +129,8 @@ func copyPayloadCmd(tdir string) string {
 func findUpdateFromConfig(config *configv1.ClusterVersion) (configv1.Update, bool) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	update := config.Spec.DesiredUpdate
 	if update == nil {
 		return configv1.Update{}, false
@@ -127,6 +141,8 @@ func findUpdateFromConfig(config *configv1.ClusterVersion) (configv1.Update, boo
 	return *update, true
 }
 func findUpdateFromConfigVersion(config *configv1.ClusterVersion, version string) (configv1.Update, bool) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for _, update := range config.Status.AvailableUpdates {

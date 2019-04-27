@@ -16,6 +16,8 @@ import (
 func TestGetUpdates(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	clientID := uuid.Must(uuid.Parse("01234567-0123-0123-0123-0123456789ab"))
 	channelName := "test-channel"
 	tests := []struct {
@@ -126,6 +128,8 @@ func TestGetUpdates(t *testing.T) {
 	}
 }
 func Test_nodeUnmarshalJSON(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tests := []struct {

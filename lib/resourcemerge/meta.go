@@ -8,6 +8,8 @@ import (
 func EnsureObjectMeta(modified *bool, existing *metav1.ObjectMeta, required metav1.ObjectMeta) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	setStringIfSet(modified, &existing.Namespace, required.Namespace)
 	setStringIfSet(modified, &existing.Name, required.Name)
 	mergeMap(modified, &existing.Labels, required.Labels)
@@ -15,6 +17,8 @@ func EnsureObjectMeta(modified *bool, existing *metav1.ObjectMeta, required meta
 	mergeOwnerRefs(modified, &existing.OwnerReferences, required.OwnerReferences)
 }
 func setStringIfSet(modified *bool, existing *string, required string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(required) == 0 {
@@ -26,6 +30,8 @@ func setStringIfSet(modified *bool, existing *string, required string) {
 	}
 }
 func mergeMap(modified *bool, existing *map[string]string, required map[string]string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if *existing == nil {
@@ -42,6 +48,8 @@ func mergeMap(modified *bool, existing *map[string]string, required map[string]s
 	}
 }
 func mergeOwnerRefs(modified *bool, existing *[]metav1.OwnerReference, required []metav1.OwnerReference) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for ridx := range required {

@@ -13,6 +13,8 @@ import (
 func ApplyDeployment(client appsclientv1.DeploymentsGetter, required *appsv1.Deployment) (*appsv1.Deployment, bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	existing, err := client.Deployments(required.Namespace).Get(required.Name, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		actual, err := client.Deployments(required.Namespace).Create(required)
@@ -33,6 +35,8 @@ func ApplyDeployment(client appsclientv1.DeploymentsGetter, required *appsv1.Dep
 	return actual, true, err
 }
 func ApplyDeploymentFromCache(lister appslisterv1.DeploymentLister, client appsclientv1.DeploymentsGetter, required *appsv1.Deployment) (*appsv1.Deployment, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	existing, err := lister.Deployments(required.Namespace).Get(required.Name)
@@ -58,6 +62,8 @@ func ApplyDeploymentFromCache(lister appslisterv1.DeploymentLister, client appsc
 func ApplyDaemonSet(client appsclientv1.DaemonSetsGetter, required *appsv1.DaemonSet) (*appsv1.DaemonSet, bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	existing, err := client.DaemonSets(required.Namespace).Get(required.Name, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		actual, err := client.DaemonSets(required.Namespace).Create(required)
@@ -78,6 +84,8 @@ func ApplyDaemonSet(client appsclientv1.DaemonSetsGetter, required *appsv1.Daemo
 	return actual, true, err
 }
 func ApplyDaemonSetFromCache(lister appslisterv1.DaemonSetLister, client appsclientv1.DaemonSetsGetter, required *appsv1.DaemonSet) (*appsv1.DaemonSet, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	existing, err := lister.DaemonSets(required.Namespace).Get(required.Name)

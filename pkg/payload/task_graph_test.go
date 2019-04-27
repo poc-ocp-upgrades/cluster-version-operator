@@ -19,6 +19,8 @@ import (
 func Test_TaskGraph_Split(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var (
 		pod	= schema.GroupVersionKind{Kind: "Pod", Version: "v1"}
 		job	= schema.GroupVersionKind{Kind: "Job", Version: "v1", Group: "batch"}
@@ -49,6 +51,8 @@ func Test_TaskGraph_Split(t *testing.T) {
 func TestByNumberAndComponent(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tasks := func(names ...string) []*Task {
 		var arr []*Task
 		for _, name := range names {
@@ -70,6 +74,8 @@ func TestByNumberAndComponent(t *testing.T) {
 	}
 }
 func TestFlattenByNumberAndComponent(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tasks := func(names ...string) []*Task {
@@ -95,6 +101,8 @@ func TestFlattenByNumberAndComponent(t *testing.T) {
 func Test_TaskGraph_real(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	path := os.Getenv("TEST_GRAPH_PATH")
 	if len(path) == 0 {
 		t.Skip("TEST_GRAPH_PATH unset")
@@ -114,6 +122,8 @@ func Test_TaskGraph_real(t *testing.T) {
 	t.Logf("original depth: %d", len(tasks))
 }
 func Test_TaskGraph_example(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	pod := func(name string) *Task {
@@ -139,6 +149,8 @@ func Test_TaskGraph_example(t *testing.T) {
 	}
 }
 func Test_TaskGraph_bulkAdd(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tasks := func(names ...string) []*Task {
@@ -177,11 +189,15 @@ type safeSlice struct {
 func (s *safeSlice) Add(item string) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	s.lock.Lock()
 	defer s.lock.Unlock()
 	s.items = append(s.items, item)
 }
 func TestRunGraph(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tasks := func(names ...string) []*Task {

@@ -14,11 +14,15 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := securityv1.AddToScheme(securityScheme); err != nil {
 		panic(err)
 	}
 }
 func ReadSecurityContextConstraintsV1OrDie(objBytes []byte) *securityv1.SecurityContextConstraints {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(securityCodecs.UniversalDecoder(securityv1.SchemeGroupVersion), objBytes)

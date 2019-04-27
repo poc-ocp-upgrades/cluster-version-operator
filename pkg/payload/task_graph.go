@@ -17,6 +17,8 @@ import (
 func SplitOnJobs(task *Task) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return task.Manifest.GVK == schema.GroupVersionKind{Kind: "Job", Version: "v1", Group: "batch"}
 }
 
@@ -28,6 +30,8 @@ const (
 )
 
 func ByNumberAndComponent(tasks []*Task) [][]*TaskNode {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(tasks) <= 1 {
@@ -74,6 +78,8 @@ func ByNumberAndComponent(tasks []*Task) [][]*TaskNode {
 	return buckets
 }
 func FlattenByNumberAndComponent(tasks []*Task) [][]*TaskNode {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(tasks) <= 1 {
@@ -127,6 +133,8 @@ type TaskNode struct {
 func (n TaskNode) String() string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var arr []string
 	for _, t := range n.Tasks {
 		if len(t.Manifest.OriginalFilename) > 0 {
@@ -140,6 +148,8 @@ func (n TaskNode) String() string {
 func (n *TaskNode) replaceIn(index, with int) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for i, from := range n.In {
 		if from == index {
 			n.In[i] = with
@@ -149,6 +159,8 @@ func (n *TaskNode) replaceIn(index, with int) {
 func (n *TaskNode) replaceOut(index, with int) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for i, to := range n.Out {
 		if to == index {
 			n.Out[i] = with
@@ -156,6 +168,8 @@ func (n *TaskNode) replaceOut(index, with int) {
 	}
 }
 func (n *TaskNode) appendOut(items ...int) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for _, in := range items {
@@ -170,9 +184,13 @@ type TaskGraph struct{ Nodes []*TaskNode }
 func NewTaskGraph(tasks []*Task) *TaskGraph {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &TaskGraph{Nodes: []*TaskNode{{Tasks: tasks}}}
 }
 func containsInt(arr []int, value int) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for _, i := range arr {
@@ -185,6 +203,8 @@ func containsInt(arr []int, value int) bool {
 func (g *TaskGraph) replaceInOf(index, with int) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	node := g.Nodes[index]
 	in := node.In
 	for _, pos := range in {
@@ -194,6 +214,8 @@ func (g *TaskGraph) replaceInOf(index, with int) {
 func (g *TaskGraph) replaceOutOf(index, with int) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	node := g.Nodes[index]
 	out := node.Out
 	for _, pos := range out {
@@ -201,6 +223,8 @@ func (g *TaskGraph) replaceOutOf(index, with int) {
 	}
 }
 func (g *TaskGraph) Split(onFn func(task *Task) bool) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for i := 0; i < len(g.Nodes); i++ {
@@ -240,6 +264,8 @@ type BreakFunc func([]*Task) [][]*TaskNode
 func PermuteOrder(breakFn BreakFunc, r *rand.Rand) BreakFunc {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return func(tasks []*Task) [][]*TaskNode {
 		steps := breakFn(tasks)
 		for _, stepTasks := range steps {
@@ -251,6 +277,8 @@ func PermuteOrder(breakFn BreakFunc, r *rand.Rand) BreakFunc {
 	}
 }
 func (g *TaskGraph) Parallelize(breakFn BreakFunc) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for i := 0; i < len(g.Nodes); i++ {
@@ -293,6 +321,8 @@ func (g *TaskGraph) Parallelize(breakFn BreakFunc) {
 func (g *TaskGraph) Roots() []int {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var roots []int
 	for i, n := range g.Nodes {
 		if len(n.In) > 0 {
@@ -303,6 +333,8 @@ func (g *TaskGraph) Roots() []int {
 	return roots
 }
 func (g *TaskGraph) Tree() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	roots := g.Roots()
@@ -346,6 +378,8 @@ func (g *TaskGraph) Tree() string {
 func covers(all []int, some []int) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, i := range some {
 		if all[i] == 0 {
 			return false
@@ -354,6 +388,8 @@ func covers(all []int, some []int) bool {
 	return true
 }
 func (g *TaskGraph) bulkAdd(nodes []*TaskNode, inNodes []int) []int {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	from := len(g.Nodes)
@@ -387,6 +423,8 @@ type taskStatus struct {
 }
 
 func RunGraph(ctx context.Context, graph *TaskGraph, maxParallelism int, fn func(ctx context.Context, tasks []*Task) error) []error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	nestedCtx, cancelFn := context.WithCancel(ctx)

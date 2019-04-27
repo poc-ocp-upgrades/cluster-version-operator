@@ -8,6 +8,8 @@ import (
 func EnsureDeployment(modified *bool, existing *appsv1.Deployment, required appsv1.Deployment) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	EnsureObjectMeta(modified, &existing.ObjectMeta, required.ObjectMeta)
 	if existing.Spec.Selector == nil {
 		*modified = true
@@ -20,6 +22,8 @@ func EnsureDeployment(modified *bool, existing *appsv1.Deployment, required apps
 	ensurePodTemplateSpec(modified, &existing.Spec.Template, required.Spec.Template)
 }
 func EnsureDaemonSet(modified *bool, existing *appsv1.DaemonSet, required appsv1.DaemonSet) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	EnsureObjectMeta(modified, &existing.ObjectMeta, required.ObjectMeta)

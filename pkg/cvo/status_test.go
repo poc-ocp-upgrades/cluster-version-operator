@@ -13,6 +13,8 @@ import (
 func Test_mergeEqualVersions(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	type args struct{}
 	tests := []struct {
 		name	string
@@ -29,6 +31,8 @@ func Test_mergeEqualVersions(t *testing.T) {
 	}
 }
 func Test_pruneStatusHistory(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	obj := &configv1.ClusterVersion{Status: configv1.ClusterVersionStatus{History: []configv1.UpdateHistory{{State: configv1.PartialUpdate, Version: "0.0.10"}, {State: configv1.PartialUpdate, Version: "0.0.9"}, {State: configv1.PartialUpdate, Version: "0.0.8"}, {State: configv1.CompletedUpdate, Version: "0.0.7"}, {State: configv1.PartialUpdate, Version: "0.0.6"}}}}
@@ -49,6 +53,8 @@ func Test_pruneStatusHistory(t *testing.T) {
 	}
 }
 func TestOperator_syncFailingStatus(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	type args struct{}

@@ -15,6 +15,8 @@ import (
 func Test_operatorMetrics_Collect(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := []struct {
 		name	string
 		optr	*Operator
@@ -136,6 +138,8 @@ func Test_operatorMetrics_Collect(t *testing.T) {
 func Test_operatorMetrics_CollectTransitions(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := []struct {
 		name	string
 		optr	*Operator
@@ -185,6 +189,8 @@ func Test_operatorMetrics_CollectTransitions(t *testing.T) {
 func expectMetric(t *testing.T, metric prometheus.Metric, value float64, labels map[string]string) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	var d dto.Metric
 	if err := metric.Write(&d); err != nil {
@@ -206,6 +212,8 @@ func expectMetric(t *testing.T, metric prometheus.Metric, value float64, labels 
 	}
 }
 func metricParts(t *testing.T, metric prometheus.Metric, labels ...string) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	t.Helper()

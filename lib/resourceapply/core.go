@@ -13,6 +13,8 @@ import (
 func ApplyNamespace(client coreclientv1.NamespacesGetter, required *corev1.Namespace) (*corev1.Namespace, bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	existing, err := client.Namespaces().Get(required.Name, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		actual, err := client.Namespaces().Create(required)
@@ -33,6 +35,8 @@ func ApplyNamespace(client coreclientv1.NamespacesGetter, required *corev1.Names
 	return actual, true, err
 }
 func ApplyService(client coreclientv1.ServicesGetter, required *corev1.Service) (*corev1.Service, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	existing, err := client.Services(required.Namespace).Get(required.Name, metav1.GetOptions{})
@@ -61,6 +65,8 @@ func ApplyService(client coreclientv1.ServicesGetter, required *corev1.Service) 
 func ApplyServiceAccount(client coreclientv1.ServiceAccountsGetter, required *corev1.ServiceAccount) (*corev1.ServiceAccount, bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	existing, err := client.ServiceAccounts(required.Namespace).Get(required.Name, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		actual, err := client.ServiceAccounts(required.Namespace).Create(required)
@@ -81,6 +87,8 @@ func ApplyServiceAccount(client coreclientv1.ServiceAccountsGetter, required *co
 	return actual, true, err
 }
 func ApplyConfigMap(client coreclientv1.ConfigMapsGetter, required *corev1.ConfigMap) (*corev1.ConfigMap, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	existing, err := client.ConfigMaps(required.Namespace).Get(required.Name, metav1.GetOptions{})

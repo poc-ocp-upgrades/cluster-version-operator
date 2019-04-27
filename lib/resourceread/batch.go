@@ -14,11 +14,15 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := batchv1.AddToScheme(batchScheme); err != nil {
 		panic(err)
 	}
 }
 func ReadJobV1OrDie(objBytes []byte) *batchv1.Job {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(batchCodecs.UniversalDecoder(batchv1.SchemeGroupVersion), objBytes)

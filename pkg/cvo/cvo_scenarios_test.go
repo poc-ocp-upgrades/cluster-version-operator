@@ -28,6 +28,8 @@ import (
 func setupCVOTest(payloadDir string) (*Operator, map[string]runtime.Object, *fake.Clientset, *dynamicfake.FakeDynamicClient, func()) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	client := &fake.Clientset{}
 	client.AddReactor("*", "*", func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
 		return false, nil, fmt.Errorf("unexpected client action: %#v", action)
@@ -74,6 +76,8 @@ func setupCVOTest(payloadDir string) (*Operator, map[string]runtime.Object, *fak
 	}
 }
 func TestCVO_StartupAndSync(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	o, cvs, client, _, shutdownFn := setupCVOTest("testdata/payloadtest")
@@ -152,6 +156,8 @@ func TestCVO_StartupAndSync(t *testing.T) {
 func TestCVO_RestartAndReconcile(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	o, cvs, client, _, shutdownFn := setupCVOTest("testdata/payloadtest")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -204,6 +210,8 @@ func TestCVO_RestartAndReconcile(t *testing.T) {
 	expectGet(t, actions[0], "clusterversions", "", "version")
 }
 func TestCVO_ErrorDuringReconcile(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	o, cvs, client, _, shutdownFn := setupCVOTest("testdata/payloadtest")
@@ -280,6 +288,8 @@ func TestCVO_ErrorDuringReconcile(t *testing.T) {
 func TestCVO_ParallelError(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	o, cvs, client, _, shutdownFn := setupCVOTest("testdata/paralleltest")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -353,6 +363,8 @@ func TestCVO_ParallelError(t *testing.T) {
 func TestCVO_VerifyInitializingPayloadState(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	o, cvs, client, _, shutdownFn := setupCVOTest("testdata/payloadtest")
 	stopCh := make(chan struct{})
 	defer close(stopCh)
@@ -379,6 +391,8 @@ func TestCVO_VerifyInitializingPayloadState(t *testing.T) {
 	}
 }
 func TestCVO_VerifyUpdatingPayloadState(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	o, cvs, client, _, shutdownFn := setupCVOTest("testdata/payloadtest")
@@ -409,6 +423,8 @@ func TestCVO_VerifyUpdatingPayloadState(t *testing.T) {
 func verifyAllStatus(t *testing.T, ch <-chan SyncWorkerStatus, items ...SyncWorkerStatus) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	if len(items) == 0 {
 		if len(ch) > 0 {
@@ -437,6 +453,8 @@ func verifyAllStatus(t *testing.T, ch <-chan SyncWorkerStatus, items ...SyncWork
 func waitFor(t *testing.T, fn func() bool) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	err := wait.PollImmediate(100*time.Millisecond, 1*time.Second, func() (bool, error) {
 		return fn(), nil
@@ -454,14 +472,20 @@ type blockingResourceBuilder struct{ ch chan error }
 func newBlockingResourceBuilder() *blockingResourceBuilder {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &blockingResourceBuilder{ch: make(chan error)}
 }
 func (b *blockingResourceBuilder) Send(err error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.ch <- err
 }
 func (b *blockingResourceBuilder) Apply(ctx context.Context, m *lib.Manifest, state payload.State) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return <-b.ch
@@ -470,6 +494,8 @@ func (b *blockingResourceBuilder) Apply(ctx context.Context, m *lib.Manifest, st
 type errorResourceBuilder struct{ errors map[string]error }
 
 func (b *errorResourceBuilder) Apply(ctx context.Context, m *lib.Manifest, state payload.State) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if err, ok := b.errors[m.OriginalFilename]; ok {

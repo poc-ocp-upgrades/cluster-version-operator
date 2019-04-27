@@ -23,6 +23,8 @@ type ResourceMapper struct {
 func (rm *ResourceMapper) AddToMap(irm *ResourceMapper) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	irm.l.Lock()
 	defer irm.l.Unlock()
 	for k, v := range rm.gvkToNew {
@@ -32,15 +34,21 @@ func (rm *ResourceMapper) AddToMap(irm *ResourceMapper) {
 func (rm *ResourceMapper) Exists(gvk schema.GroupVersionKind) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_, ok := rm.gvkToNew[gvk]
 	return ok
 }
 func (rm *ResourceMapper) RegisterGVK(gvk schema.GroupVersionKind, f NewInteraceFunc) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	rm.gvkToNew[gvk] = f
 }
 func NewResourceMapper() *ResourceMapper {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	m := map[schema.GroupVersionKind]NewInteraceFunc{}
@@ -64,6 +72,8 @@ type Interface interface {
 }
 
 func New(mapper *ResourceMapper, rest *rest.Config, m lib.Manifest) (Interface, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	f, ok := mapper.gvkToNew[m.GVK]

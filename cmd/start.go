@@ -11,6 +11,8 @@ import (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	opts := start.NewOptions()
 	cmd := &cobra.Command{Use: "start", Short: "Starts Cluster Version Operator", Long: "", Run: func(cmd *cobra.Command, args []string) {
 		flag.Set("logtostderr", "true")

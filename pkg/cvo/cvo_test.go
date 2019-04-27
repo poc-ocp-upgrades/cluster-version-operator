@@ -42,9 +42,13 @@ type clientCVLister struct{ client clientset.Interface }
 func (c *clientCVLister) Get(name string) (*configv1.ClusterVersion, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return c.client.Config().ClusterVersions().Get(name, metav1.GetOptions{})
 }
 func (c *clientCVLister) List(selector labels.Selector) (ret []*configv1.ClusterVersion, err error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	list, err := c.client.Config().ClusterVersions().List(metav1.ListOptions{LabelSelector: selector.String()})
@@ -63,9 +67,13 @@ type clientCOLister struct{ client clientset.Interface }
 func (c *clientCOLister) Get(name string) (*configv1.ClusterOperator, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return c.client.Config().ClusterOperators().Get(name, metav1.GetOptions{})
 }
 func (c *clientCOLister) List(selector labels.Selector) (ret []*configv1.ClusterOperator, err error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	list, err := c.client.Config().ClusterOperators().List(metav1.ListOptions{LabelSelector: selector.String()})
@@ -87,9 +95,13 @@ type cvLister struct {
 func (r *cvLister) List(selector labels.Selector) (ret []*configv1.ClusterVersion, err error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return r.Items, r.Err
 }
 func (r *cvLister) Get(name string) (*configv1.ClusterVersion, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for _, s := range r.Items {
@@ -108,9 +120,13 @@ type coLister struct {
 func (r *coLister) List(selector labels.Selector) (ret []*configv1.ClusterOperator, err error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return r.Items, r.Err
 }
 func (r *coLister) Get(name string) (*configv1.ClusterOperator, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for _, s := range r.Items {
@@ -129,6 +145,8 @@ type crdLister struct {
 func (r *crdLister) Get(name string) (*apiextv1beta1.CustomResourceDefinition, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, s := range r.Items {
 		if s.Name == name {
 			return s, nil
@@ -139,6 +157,8 @@ func (r *crdLister) Get(name string) (*apiextv1beta1.CustomResourceDefinition, e
 func (r *crdLister) List(selector labels.Selector) (ret []*apiextv1beta1.CustomResourceDefinition, err error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return r.Items, r.Err
 }
 
@@ -147,9 +167,13 @@ type fakeApiExtClient struct{}
 func (c *fakeApiExtClient) Discovery() discovery.DiscoveryInterface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	panic("not implemented")
 }
 func (c *fakeApiExtClient) ApiextensionsV1beta1() apiextclientv1.ApiextensionsV1beta1Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return c
@@ -157,9 +181,13 @@ func (c *fakeApiExtClient) ApiextensionsV1beta1() apiextclientv1.ApiextensionsV1
 func (c *fakeApiExtClient) Apiextensions() apiextclientv1.ApiextensionsV1beta1Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return c
 }
 func (c *fakeApiExtClient) RESTClient() rest.Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	panic("not implemented")
@@ -167,9 +195,13 @@ func (c *fakeApiExtClient) RESTClient() rest.Interface {
 func (c *fakeApiExtClient) CustomResourceDefinitions() apiextclientv1.CustomResourceDefinitionInterface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return c
 }
 func (c *fakeApiExtClient) Create(crd *apiextv1beta1.CustomResourceDefinition) (*apiextv1beta1.CustomResourceDefinition, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return crd, nil
@@ -177,9 +209,13 @@ func (c *fakeApiExtClient) Create(crd *apiextv1beta1.CustomResourceDefinition) (
 func (c *fakeApiExtClient) Update(*apiextv1beta1.CustomResourceDefinition) (*apiextv1beta1.CustomResourceDefinition, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	panic("not implemented")
 }
 func (c *fakeApiExtClient) UpdateStatus(*apiextv1beta1.CustomResourceDefinition) (*apiextv1beta1.CustomResourceDefinition, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	panic("not implemented")
@@ -187,9 +223,13 @@ func (c *fakeApiExtClient) UpdateStatus(*apiextv1beta1.CustomResourceDefinition)
 func (c *fakeApiExtClient) Delete(name string, options *metav1.DeleteOptions) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	panic("not implemented")
 }
 func (c *fakeApiExtClient) DeleteCollection(options *metav1.DeleteOptions, listOptions metav1.ListOptions) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	panic("not implemented")
@@ -197,9 +237,13 @@ func (c *fakeApiExtClient) DeleteCollection(options *metav1.DeleteOptions, listO
 func (c *fakeApiExtClient) Get(name string, options metav1.GetOptions) (*apiextv1beta1.CustomResourceDefinition, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	panic("not implemented")
 }
 func (c *fakeApiExtClient) List(opts metav1.ListOptions) (*apiextv1beta1.CustomResourceDefinitionList, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	panic("not implemented")
@@ -207,14 +251,20 @@ func (c *fakeApiExtClient) List(opts metav1.ListOptions) (*apiextv1beta1.CustomR
 func (c *fakeApiExtClient) Watch(opts metav1.ListOptions) (watch.Interface, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	panic("not implemented")
 }
 func (c *fakeApiExtClient) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *apiextv1beta1.CustomResourceDefinition, err error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	panic("not implemented")
 }
 func TestOperator_sync(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	id := uuid.Must(uuid.NewRandom()).String()
@@ -460,6 +510,8 @@ func TestOperator_sync(t *testing.T) {
 func TestOperator_availableUpdatesSync(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	id := uuid.Must(uuid.NewRandom()).String()
 	tests := []struct {
 		name		string
@@ -552,6 +604,8 @@ func TestOperator_availableUpdatesSync(t *testing.T) {
 func expectGet(t *testing.T, a ktesting.Action, resource, namespace, name string) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	if "get" != a.GetVerb() {
 		t.Fatalf("unexpected verb: %s", a.GetVerb())
@@ -569,10 +623,14 @@ func expectGet(t *testing.T, a ktesting.Action, resource, namespace, name string
 func expectCreate(t *testing.T, a ktesting.Action, resource, namespace string, obj interface{}) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	expectMutation(t, a, "create", resource, "", namespace, obj)
 }
 func expectUpdate(t *testing.T, a ktesting.Action, resource, namespace string, obj interface{}) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	t.Helper()
@@ -581,10 +639,14 @@ func expectUpdate(t *testing.T, a ktesting.Action, resource, namespace string, o
 func expectUpdateStatus(t *testing.T, a ktesting.Action, resource, namespace string, obj interface{}) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.Helper()
 	expectMutation(t, a, "update", resource, "status", namespace, obj)
 }
 func expectMutation(t *testing.T, a ktesting.Action, verb string, resource, subresource, namespace string, obj interface{}) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	t.Helper()
@@ -634,6 +696,8 @@ func expectMutation(t *testing.T, a ktesting.Action, verb string, resource, subr
 	}
 }
 func fakeClientsetWithUpdates(obj *configv1.ClusterVersion) *fake.Clientset {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	client := &fake.Clientset{}

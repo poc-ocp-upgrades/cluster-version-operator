@@ -11,6 +11,8 @@ import (
 func TestCreateOnlyCreate(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	feature := `{
   "kind": "FeatureGate",
   "apiVersion": "config.openshift.io/v1",
@@ -35,6 +37,8 @@ func TestCreateOnlyCreate(t *testing.T) {
 	}
 }
 func TestCreateOnlyUpdate(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	feature := `{

@@ -27,6 +27,8 @@ import (
 func Test_SyncWorker_apply(t *testing.T) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := []struct {
 		manifests	[]string
 		reactors	map[action]error
@@ -117,6 +119,8 @@ type cancelAfterErrorBuilder struct {
 func (b *cancelAfterErrorBuilder) Apply(ctx context.Context, m *lib.Manifest, state payload.State) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	err := b.builder.Apply(ctx, m, state)
 	if err != nil {
 		if b.remainingErrors == 0 {
@@ -128,6 +132,8 @@ func (b *cancelAfterErrorBuilder) Apply(ctx context.Context, m *lib.Manifest, st
 	return err
 }
 func Test_SyncWorker_apply_generic(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tests := []struct {
@@ -241,10 +247,14 @@ type testBuilder struct {
 func (t *testBuilder) WithMode(m resourcebuilder.Mode) resourcebuilder.Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	t.mode = m
 	return t
 }
 func (t *testBuilder) WithModifier(m resourcebuilder.MetaV1ObjectModifierFunc) resourcebuilder.Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	t.modifiers = append(t.modifiers, m)
@@ -253,10 +263,14 @@ func (t *testBuilder) WithModifier(m resourcebuilder.MetaV1ObjectModifierFunc) r
 func (t *testBuilder) Do(_ context.Context) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	a := t.recorder.Invoke(t.m.GVK, t.m.Object().GetNamespace(), t.m.Object().GetName())
 	return t.reactors[a]
 }
 func newTestBuilder(r *recorder, rts map[action]error) resourcebuilder.NewInteraceFunc {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return func(_ *rest.Config, m lib.Manifest) resourcebuilder.Interface {
@@ -267,6 +281,8 @@ func newTestBuilder(r *recorder, rts map[action]error) resourcebuilder.NewIntera
 type recorder struct{ actions []action }
 
 func (r *recorder) Invoke(gvk schema.GroupVersionKind, namespace, name string) action {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	action := action{GVK: gvk, Namespace: namespace, Name: name}
@@ -283,6 +299,8 @@ type action struct {
 func newAction(gvk schema.GroupVersionKind, namespace, name string) action {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return action{GVK: gvk, Namespace: namespace, Name: name}
 }
 
@@ -294,6 +312,8 @@ type fakeSyncRecorder struct {
 func (r *fakeSyncRecorder) StatusCh() <-chan SyncWorkerStatus {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	ch := make(chan SyncWorkerStatus)
 	close(ch)
 	return ch
@@ -301,8 +321,12 @@ func (r *fakeSyncRecorder) StatusCh() <-chan SyncWorkerStatus {
 func (r *fakeSyncRecorder) Start(ctx context.Context, maxWorkers int) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 }
 func (r *fakeSyncRecorder) Update(generation int64, desired configv1.Update, overrides []configv1.ComponentOverride, state payload.State) *SyncWorkerStatus {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	r.Updates = append(r.Updates, desired)
@@ -317,6 +341,8 @@ type fakeResourceBuilder struct {
 func (b *fakeResourceBuilder) Apply(m *lib.Manifest) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.M = append(b.M, m)
 	return b.Err
 }
@@ -327,6 +353,8 @@ type fakeDirectoryRetriever struct {
 }
 
 func (r *fakeDirectoryRetriever) RetrievePayload(ctx context.Context, update configv1.Update) (string, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return r.Path, r.Err
@@ -340,6 +368,8 @@ type fakePayloadRetriever struct {
 func (r *fakePayloadRetriever) RetrievePayload(ctx context.Context, desired configv1.Update) (string, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return r.Dir, r.Err
 }
 
@@ -349,6 +379,8 @@ type testResourceBuilder struct {
 }
 
 func (b *testResourceBuilder) Apply(ctx context.Context, m *lib.Manifest, state payload.State) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	ns := m.Object().GetNamespace()

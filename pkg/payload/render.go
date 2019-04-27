@@ -15,6 +15,8 @@ import (
 func Render(outputDir, releaseImage string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var (
 		manifestsDir	= filepath.Join(DefaultPayloadDir, CVOManifestDir)
 		oManifestsDir	= filepath.Join(outputDir, "manifests")
@@ -40,6 +42,8 @@ func Render(outputDir, releaseImage string) error {
 	return nil
 }
 func renderDir(renderConfig manifestRenderConfig, idir, odir string, skipFiles sets.String) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if err := os.MkdirAll(odir, 0666); err != nil {
@@ -84,6 +88,8 @@ func renderDir(renderConfig manifestRenderConfig, idir, odir string, skipFiles s
 type manifestRenderConfig struct{ ReleaseImage string }
 
 func renderManifest(config manifestRenderConfig, manifestBytes []byte) ([]byte, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tmpl, err := template.New("manifest").Parse(string(manifestBytes))

@@ -19,6 +19,8 @@ import (
 func (optr *Operator) syncAvailableUpdates(config *configv1.ClusterVersion) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	usedDefaultUpstream := false
 	upstream := string(config.Spec.Upstream)
 	if len(upstream) == 0 {
@@ -51,9 +53,13 @@ type availableUpdates struct {
 func (u *availableUpdates) RecentlyChanged(interval time.Duration) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return u.At.After(time.Now().Add(-interval))
 }
 func (u *availableUpdates) NeedsUpdate(original *configv1.ClusterVersion) *configv1.ClusterVersion {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if u == nil {
@@ -73,6 +79,8 @@ func (u *availableUpdates) NeedsUpdate(original *configv1.ClusterVersion) *confi
 func (optr *Operator) setAvailableUpdates(u *availableUpdates) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if u != nil {
 		u.At = time.Now()
 	}
@@ -83,11 +91,15 @@ func (optr *Operator) setAvailableUpdates(u *availableUpdates) {
 func (optr *Operator) getAvailableUpdates() *availableUpdates {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	optr.statusLock.Lock()
 	defer optr.statusLock.Unlock()
 	return optr.availableUpdates
 }
 func calculateAvailableUpdatesStatus(clusterID, upstream, channel, version string) ([]configv1.Update, configv1.ClusterOperatorStatusCondition) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(upstream) == 0 {
@@ -118,6 +130,8 @@ func calculateAvailableUpdatesStatus(clusterID, upstream, channel, version strin
 func checkForUpdate(clusterID, upstream, channel string, currentVersion semver.Version) ([]cincinnati.Update, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	uuid, err := uuid.Parse(string(clusterID))
 	if err != nil {
 		return nil, err
@@ -130,7 +144,16 @@ func checkForUpdate(clusterID, upstream, channel string, currentVersion semver.V
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

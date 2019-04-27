@@ -67,6 +67,8 @@ type Operator struct {
 func New(nodename string, namespace, name string, releaseImage string, overridePayloadDir string, minimumInterval time.Duration, cvInformer configinformersv1.ClusterVersionInformer, coInformer configinformersv1.ClusterOperatorInformer, restConfig *rest.Config, burstRestConfig *rest.Config, client clientset.Interface, kubeClient kubernetes.Interface, enableMetrics bool) *Operator {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartLogging(glog.Infof)
 	eventBroadcaster.StartRecordingToSink(&coreclientsetv1.EventSinkImpl{Interface: kubeClient.CoreV1().Events(namespace)})
@@ -87,6 +89,8 @@ func New(nodename string, namespace, name string, releaseImage string, overrideP
 func (optr *Operator) InitializeFromPayload() error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	update, err := payload.LoadUpdate(optr.defaultPayloadDir(), optr.releaseImage)
 	if err != nil {
 		return fmt.Errorf("the local release contents are invalid - no current version can be determined from disk: %v", err)
@@ -99,6 +103,8 @@ func (optr *Operator) InitializeFromPayload() error {
 	return nil
 }
 func (optr *Operator) Run(ctx context.Context, workers int) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	defer utilruntime.HandleCrash()
@@ -126,9 +132,13 @@ func (optr *Operator) Run(ctx context.Context, workers int) {
 func (optr *Operator) queueKey() string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return fmt.Sprintf("%s/%s", optr.namespace, optr.name)
 }
 func (optr *Operator) eventHandler() cache.ResourceEventHandler {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	workQueueKey := optr.queueKey()
@@ -145,6 +155,8 @@ func (optr *Operator) eventHandler() cache.ResourceEventHandler {
 func (optr *Operator) worker(queue workqueue.RateLimitingInterface, syncHandler func(string) error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for processNextWorkItem(queue, syncHandler, optr.syncFailingStatus) {
 	}
 }
@@ -152,6 +164,8 @@ func (optr *Operator) worker(queue workqueue.RateLimitingInterface, syncHandler 
 type syncFailingStatusFunc func(config *configv1.ClusterVersion, err error) error
 
 func processNextWorkItem(queue workqueue.RateLimitingInterface, syncHandler func(string) error, syncFailingStatus syncFailingStatusFunc) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	key, quit := queue.Get()
@@ -164,6 +178,8 @@ func processNextWorkItem(queue workqueue.RateLimitingInterface, syncHandler func
 	return true
 }
 func handleErr(queue workqueue.RateLimitingInterface, err error, key interface{}, syncFailingStatus syncFailingStatusFunc) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if err == nil {
@@ -181,6 +197,8 @@ func handleErr(queue workqueue.RateLimitingInterface, err error, key interface{}
 	queue.Forget(key)
 }
 func (optr *Operator) sync(key string) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	startTime := time.Now()
@@ -223,6 +241,8 @@ func (optr *Operator) sync(key string) error {
 func (optr *Operator) availableUpdatesSync(key string) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	startTime := time.Now()
 	glog.V(4).Infof("Started syncing available updates %q (%v)", key, startTime)
 	defer func() {
@@ -243,6 +263,8 @@ func (optr *Operator) availableUpdatesSync(key string) error {
 func (optr *Operator) isOlderThanLastUpdate(config *configv1.ClusterVersion) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	i, err := strconv.ParseInt(config.ResourceVersion, 10, 64)
 	if err != nil {
 		return false
@@ -252,6 +274,8 @@ func (optr *Operator) isOlderThanLastUpdate(config *configv1.ClusterVersion) boo
 	return i < optr.lastResourceVersion
 }
 func (optr *Operator) rememberLastUpdate(config *configv1.ClusterVersion) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if config == nil {
@@ -266,6 +290,8 @@ func (optr *Operator) rememberLastUpdate(config *configv1.ClusterVersion) {
 	optr.lastResourceVersion = i
 }
 func (optr *Operator) getOrCreateClusterVersion() (*configv1.ClusterVersion, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	obj, err := optr.cvLister.Get(optr.name)
@@ -294,6 +320,8 @@ func (optr *Operator) getOrCreateClusterVersion() (*configv1.ClusterVersion, boo
 func versionString(update configv1.Update) string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(update.Version) > 0 {
 		return update.Version
 	}
@@ -305,9 +333,13 @@ func versionString(update configv1.Update) string {
 func (optr *Operator) currentVersion() configv1.Update {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return configv1.Update{Version: optr.releaseVersion, Image: optr.releaseImage}
 }
 func (optr *Operator) SetSyncWorkerForTesting(worker ConfigSyncWorker) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	optr.configSync = worker
@@ -323,9 +355,13 @@ type resourceBuilder struct {
 func NewResourceBuilder(config, burstConfig *rest.Config, clusterOperators configlistersv1.ClusterOperatorLister) payload.ResourceBuilder {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &resourceBuilder{config: config, burstConfig: burstConfig, clusterOperators: clusterOperators}
 }
 func (b *resourceBuilder) builderFor(m *lib.Manifest, state payload.State) (resourcebuilder.Interface, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	config := b.config
@@ -347,6 +383,8 @@ func (b *resourceBuilder) builderFor(m *lib.Manifest, state payload.State) (reso
 func (b *resourceBuilder) Apply(ctx context.Context, m *lib.Manifest, state payload.State) error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	builder, err := b.builderFor(m, state)
 	if err != nil {
 		return err
@@ -357,6 +395,8 @@ func (b *resourceBuilder) Apply(ctx context.Context, m *lib.Manifest, state payl
 	return builder.WithMode(stateToMode(state)).Do(ctx)
 }
 func stateToMode(state payload.State) resourcebuilder.Mode {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	switch state {
@@ -373,6 +413,8 @@ func stateToMode(state payload.State) resourcebuilder.Mode {
 func hasNeverReachedLevel(cv *configv1.ClusterVersion) bool {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, version := range cv.Status.History {
 		if version.State == configv1.CompletedUpdate {
 			return false
@@ -381,6 +423,8 @@ func hasNeverReachedLevel(cv *configv1.ClusterVersion) bool {
 	return true
 }
 func hasReachedLevel(cv *configv1.ClusterVersion, desired configv1.Update) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if len(cv.Status.History) == 0 {

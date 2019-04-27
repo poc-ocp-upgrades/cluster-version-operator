@@ -8,6 +8,8 @@ import (
 func EnsureAPIService(modified *bool, existing *apiregv1.APIService, required apiregv1.APIService) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	EnsureObjectMeta(modified, &existing.ObjectMeta, required.ObjectMeta)
 	if !equality.Semantic.DeepEqual(existing.Spec, required.Spec) {
 		*modified = true

@@ -18,9 +18,13 @@ type securityBuilder struct {
 func newSecurityBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &securityBuilder{client: securityclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *securityBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -28,10 +32,14 @@ func (b *securityBuilder) WithMode(m Mode) Interface {
 func (b *securityBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *securityBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	scc := resourceread.ReadSecurityContextConstraintsV1OrDie(b.raw)

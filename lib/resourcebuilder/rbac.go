@@ -18,9 +18,13 @@ type clusterRoleBuilder struct {
 func newClusterRoleBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &clusterRoleBuilder{client: rbacclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *clusterRoleBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -28,10 +32,14 @@ func (b *clusterRoleBuilder) WithMode(m Mode) Interface {
 func (b *clusterRoleBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *clusterRoleBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	clusterRole := resourceread.ReadClusterRoleV1OrDie(b.raw)
@@ -51,9 +59,13 @@ type clusterRoleBindingBuilder struct {
 func newClusterRoleBindingBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &clusterRoleBindingBuilder{client: rbacclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *clusterRoleBindingBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -61,10 +73,14 @@ func (b *clusterRoleBindingBuilder) WithMode(m Mode) Interface {
 func (b *clusterRoleBindingBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *clusterRoleBindingBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	clusterRoleBinding := resourceread.ReadClusterRoleBindingV1OrDie(b.raw)
@@ -84,9 +100,13 @@ type roleBuilder struct {
 func newRoleBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &roleBuilder{client: rbacclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *roleBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -94,10 +114,14 @@ func (b *roleBuilder) WithMode(m Mode) Interface {
 func (b *roleBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *roleBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	role := resourceread.ReadRoleV1OrDie(b.raw)
@@ -117,9 +141,13 @@ type roleBindingBuilder struct {
 func newRoleBindingBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &roleBindingBuilder{client: rbacclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *roleBindingBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -127,10 +155,14 @@ func (b *roleBindingBuilder) WithMode(m Mode) Interface {
 func (b *roleBindingBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *roleBindingBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	roleBinding := resourceread.ReadRoleBindingV1OrDie(b.raw)

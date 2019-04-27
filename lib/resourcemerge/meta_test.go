@@ -14,9 +14,13 @@ import (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	klog.InitFlags(flag.CommandLine)
 }
 func TestMergeOwnerRefs(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	tests := []struct {

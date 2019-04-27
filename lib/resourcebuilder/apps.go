@@ -24,9 +24,13 @@ type deploymentBuilder struct {
 func newDeploymentBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &deploymentBuilder{client: appsclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *deploymentBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -34,10 +38,14 @@ func (b *deploymentBuilder) WithMode(m Mode) Interface {
 func (b *deploymentBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *deploymentBuilder) Do(ctx context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	deployment := resourceread.ReadDeploymentV1OrDie(b.raw)
@@ -54,6 +62,8 @@ func (b *deploymentBuilder) Do(ctx context.Context) error {
 	return nil
 }
 func waitForDeploymentCompletion(ctx context.Context, client appsclientv1.DeploymentsGetter, deployment *appsv1.Deployment) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return wait.PollImmediateUntil(defaultObjectPollInterval, func() (bool, error) {
@@ -85,9 +95,13 @@ type daemonsetBuilder struct {
 func newDaemonsetBuilder(config *rest.Config, m lib.Manifest) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &daemonsetBuilder{client: appsclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
 func (b *daemonsetBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return b
@@ -95,10 +109,14 @@ func (b *daemonsetBuilder) WithMode(m Mode) Interface {
 func (b *daemonsetBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *daemonsetBuilder) Do(ctx context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	daemonset := resourceread.ReadDaemonSetV1OrDie(b.raw)
@@ -115,6 +133,8 @@ func (b *daemonsetBuilder) Do(ctx context.Context) error {
 	return nil
 }
 func waitForDaemonsetRollout(ctx context.Context, client appsclientv1.DaemonSetsGetter, daemonset *appsv1.DaemonSet) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	return wait.PollImmediateUntil(defaultObjectPollInterval, func() (bool, error) {

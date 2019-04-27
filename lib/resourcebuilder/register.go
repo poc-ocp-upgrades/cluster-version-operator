@@ -15,6 +15,8 @@ import (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	rm := NewResourceMapper()
 	rm.RegisterGVK(apiextv1beta1.SchemeGroupVersion.WithKind("CustomResourceDefinition"), newCRDBuilder)
 	rm.RegisterGVK(apiregv1.SchemeGroupVersion.WithKind("APIService"), newAPIServiceBuilder)

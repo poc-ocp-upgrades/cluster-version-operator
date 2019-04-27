@@ -29,6 +29,8 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := configv1.AddToScheme(osScheme); err != nil {
 		panic(err)
 	}
@@ -36,6 +38,8 @@ func init() {
 	osMapper.AddToMap(resourcebuilder.Mapper)
 }
 func readClusterOperatorV1OrDie(objBytes []byte) *configv1.ClusterOperator {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(osCodecs.UniversalDecoder(configv1.SchemeGroupVersion), objBytes)
@@ -55,6 +59,8 @@ type clusterOperatorBuilder struct {
 func newClusterOperatorBuilder(config *rest.Config, m lib.Manifest) resourcebuilder.Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return NewClusterOperatorBuilder(clientClusterOperatorsGetter{getter: configclientv1.NewForConfigOrDie(config).ClusterOperators()}, m)
 }
 
@@ -68,14 +74,20 @@ type clientClusterOperatorsGetter struct {
 func (g clientClusterOperatorsGetter) Get(name string) (*configv1.ClusterOperator, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return g.getter.Get(name, metav1.GetOptions{})
 }
 func NewClusterOperatorBuilder(client ClusterOperatorsGetter, m lib.Manifest) resourcebuilder.Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &clusterOperatorBuilder{client: client, raw: m.Raw}
 }
 func (b *clusterOperatorBuilder) WithMode(m resourcebuilder.Mode) resourcebuilder.Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	b.mode = m
@@ -84,10 +96,14 @@ func (b *clusterOperatorBuilder) WithMode(m resourcebuilder.Mode) resourcebuilde
 func (b *clusterOperatorBuilder) WithModifier(f resourcebuilder.MetaV1ObjectModifierFunc) resourcebuilder.Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
 func (b *clusterOperatorBuilder) Do(ctx context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	os := readClusterOperatorV1OrDie(b.raw)
@@ -97,6 +113,8 @@ func (b *clusterOperatorBuilder) Do(ctx context.Context) error {
 	return waitForOperatorStatusToBeDone(ctx, 1*time.Second, b.client, os, b.mode)
 }
 func waitForOperatorStatusToBeDone(ctx context.Context, interval time.Duration, client ClusterOperatorsGetter, expected *configv1.ClusterOperator, mode resourcebuilder.Mode) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var lastErr error
@@ -207,6 +225,8 @@ func waitForOperatorStatusToBeDone(ctx context.Context, interval time.Duration, 
 	return nil
 }
 func lowerFirst(str string) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	for i, v := range str {

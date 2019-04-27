@@ -21,6 +21,8 @@ var (
 func init() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	prometheus.MustRegister(metricPayloadErrors)
 }
 
@@ -38,9 +40,13 @@ type Task struct {
 func (st *Task) Copy() *Task {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &Task{Index: st.Index, Total: st.Total, Manifest: st.Manifest, Requeued: st.Requeued}
 }
 func (st *Task) String() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	ns := st.Manifest.Object().GetNamespace()
@@ -50,6 +56,8 @@ func (st *Task) String() string {
 	return fmt.Sprintf("%s \"%s/%s\" (%d of %d)", strings.ToLower(st.Manifest.GVK.Kind), ns, st.Manifest.Object().GetName(), st.Index, st.Total)
 }
 func (st *Task) Run(ctx context.Context, version string, builder ResourceBuilder, state State) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	var lastErr error
@@ -96,14 +104,20 @@ type UpdateError struct {
 func (e *UpdateError) Error() string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return e.Message
 }
 func (e *UpdateError) Cause() error {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return e.Nested
 }
 func reasonForPayloadSyncError(err error) (string, string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	err = errors.Cause(err)
@@ -131,6 +145,8 @@ func reasonForPayloadSyncError(err error) (string, string) {
 	}
 }
 func SummaryForReason(reason, name string) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	switch reason {

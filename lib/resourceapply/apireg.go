@@ -12,6 +12,8 @@ import (
 func ApplyAPIService(client apiregclientv1.APIServicesGetter, required *apiregv1.APIService) (*apiregv1.APIService, bool, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	existing, err := client.APIServices().Get(required.Name, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		actual, err := client.APIServices().Create(required)

