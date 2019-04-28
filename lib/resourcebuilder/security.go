@@ -2,7 +2,6 @@ package resourcebuilder
 
 import (
 	"context"
-
 	securityclientv1 "github.com/openshift/client-go/security/clientset/versioned/typed/security/v1"
 	"github.com/openshift/cluster-version-operator/lib"
 	"github.com/openshift/cluster-version-operator/lib/resourceapply"
@@ -11,28 +10,30 @@ import (
 )
 
 type securityBuilder struct {
-	client   *securityclientv1.SecurityV1Client
-	raw      []byte
-	modifier MetaV1ObjectModifierFunc
+	client		*securityclientv1.SecurityV1Client
+	raw		[]byte
+	modifier	MetaV1ObjectModifierFunc
 }
 
 func newSecurityBuilder(config *rest.Config, m lib.Manifest) Interface {
-	return &securityBuilder{
-		client: securityclientv1.NewForConfigOrDie(withProtobuf(config)),
-		raw:    m.Raw,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &securityBuilder{client: securityclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
-
 func (b *securityBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return b
 }
-
 func (b *securityBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
-
 func (b *securityBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	scc := resourceread.ReadSecurityContextConstraintsV1OrDie(b.raw)
 	if b.modifier != nil {
 		b.modifier(scc)

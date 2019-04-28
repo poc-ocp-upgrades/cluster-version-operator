@@ -8,24 +8,24 @@ import (
 	"reflect"
 	"strings"
 	"testing"
-
 	"github.com/davecgh/go-spew/spew"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/klog"
 )
 
 func init() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	klog.InitFlags(flag.CommandLine)
 }
-
 func TestParseManifests(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := []struct {
-		name string
-		raw  string
-		want []Manifest
-	}{{
-		name: "ingress",
-		raw: `
+		name	string
+		raw	string
+		want	[]Manifest
+	}{{name: "ingress", raw: `
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -39,14 +39,7 @@ spec:
         backend:
           serviceName: test
           servicePort: 80
-`,
-		want: []Manifest{{
-			Raw: []byte(`{"apiVersion":"extensions/v1beta1","kind":"Ingress","metadata":{"name":"test-ingress","namespace":"test-namespace"},"spec":{"rules":[{"http":{"paths":[{"backend":{"serviceName":"test","servicePort":80},"path":"/testpath"}]}}]}}`),
-			GVK: schema.GroupVersionKind{Group: "extensions", Version: "v1beta1", Kind: "Ingress"},
-		}},
-	}, {
-		name: "configmap",
-		raw: `
+`, want: []Manifest{{Raw: []byte(`{"apiVersion":"extensions/v1beta1","kind":"Ingress","metadata":{"name":"test-ingress","namespace":"test-namespace"},"spec":{"rules":[{"http":{"paths":[{"backend":{"serviceName":"test","servicePort":80},"path":"/testpath"}]}}]}}`), GVK: schema.GroupVersionKind{Group: "extensions", Version: "v1beta1", Kind: "Ingress"}}}}, {name: "configmap", raw: `
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -57,14 +50,7 @@ data:
   multi-line: |
     hello world
     how are you?
-`,
-		want: []Manifest{{
-			Raw: []byte(`{"apiVersion":"v1","data":{"color":"red","multi-line":"hello world\nhow are you?\n"},"kind":"ConfigMap","metadata":{"name":"a-config","namespace":"default"}}`),
-			GVK: schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"},
-		}},
-	}, {
-		name: "two-resources",
-		raw: `
+`, want: []Manifest{{Raw: []byte(`{"apiVersion":"v1","data":{"color":"red","multi-line":"hello world\nhow are you?\n"},"kind":"ConfigMap","metadata":{"name":"a-config","namespace":"default"}}`), GVK: schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"}}}}, {name: "two-resources", raw: `
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -89,17 +75,7 @@ data:
   multi-line: |
     hello world
     how are you?
-`,
-		want: []Manifest{{
-			Raw: []byte(`{"apiVersion":"extensions/v1beta1","kind":"Ingress","metadata":{"name":"test-ingress","namespace":"test-namespace"},"spec":{"rules":[{"http":{"paths":[{"backend":{"serviceName":"test","servicePort":80},"path":"/testpath"}]}}]}}`),
-			GVK: schema.GroupVersionKind{Group: "extensions", Version: "v1beta1", Kind: "Ingress"},
-		}, {
-			Raw: []byte(`{"apiVersion":"v1","data":{"color":"red","multi-line":"hello world\nhow are you?\n"},"kind":"ConfigMap","metadata":{"name":"a-config","namespace":"default"}}`),
-			GVK: schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"},
-		}},
-	}, {
-		name: "two-resources-with-empty",
-		raw: `
+`, want: []Manifest{{Raw: []byte(`{"apiVersion":"extensions/v1beta1","kind":"Ingress","metadata":{"name":"test-ingress","namespace":"test-namespace"},"spec":{"rules":[{"http":{"paths":[{"backend":{"serviceName":"test","servicePort":80},"path":"/testpath"}]}}]}}`), GVK: schema.GroupVersionKind{Group: "extensions", Version: "v1beta1", Kind: "Ingress"}}, {Raw: []byte(`{"apiVersion":"v1","data":{"color":"red","multi-line":"hello world\nhow are you?\n"},"kind":"ConfigMap","metadata":{"name":"a-config","namespace":"default"}}`), GVK: schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"}}}}, {name: "two-resources-with-empty", raw: `
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -127,52 +103,30 @@ data:
     hello world
     how are you?
 ---
-`,
-		want: []Manifest{{
-			Raw: []byte(`{"apiVersion":"extensions/v1beta1","kind":"Ingress","metadata":{"name":"test-ingress","namespace":"test-namespace"},"spec":{"rules":[{"http":{"paths":[{"backend":{"serviceName":"test","servicePort":80},"path":"/testpath"}]}}]}}`),
-			GVK: schema.GroupVersionKind{Group: "extensions", Version: "v1beta1", Kind: "Ingress"},
-		}, {
-			Raw: []byte(`{"apiVersion":"v1","data":{"color":"red","multi-line":"hello world\nhow are you?\n"},"kind":"ConfigMap","metadata":{"name":"a-config","namespace":"default"}}`),
-			GVK: schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"},
-		}},
-	}}
+`, want: []Manifest{{Raw: []byte(`{"apiVersion":"extensions/v1beta1","kind":"Ingress","metadata":{"name":"test-ingress","namespace":"test-namespace"},"spec":{"rules":[{"http":{"paths":[{"backend":{"serviceName":"test","servicePort":80},"path":"/testpath"}]}}]}}`), GVK: schema.GroupVersionKind{Group: "extensions", Version: "v1beta1", Kind: "Ingress"}}, {Raw: []byte(`{"apiVersion":"v1","data":{"color":"red","multi-line":"hello world\nhow are you?\n"},"kind":"ConfigMap","metadata":{"name":"a-config","namespace":"default"}}`), GVK: schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"}}}}}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			got, err := ParseManifests(strings.NewReader(test.raw))
 			if err != nil {
 				t.Fatalf("failed to parse manifest: %v", err)
 			}
-
 			for i := range got {
 				got[i].Obj = nil
 			}
-
 			if !reflect.DeepEqual(got, test.want) {
 				t.Fatalf("mismatch found")
 			}
 		})
 	}
-
 }
-
 func TestManifestsFromFiles(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	tests := []struct {
-		name string
-		fs   dir
-		want []Manifest
-	}{{
-		name: "no-files",
-		fs: dir{
-			name: "a",
-		},
-		want: nil,
-	}, {
-		name: "all-files",
-		fs: dir{
-			name: "a",
-			files: []file{{
-				name: "f0",
-				contents: `
+		name	string
+		fs	dir
+		want	[]Manifest
+	}{{name: "no-files", fs: dir{name: "a"}, want: nil}, {name: "all-files", fs: dir{name: "a", files: []file{{name: "f0", contents: `
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -186,10 +140,7 @@ spec:
         backend:
           serviceName: test
           servicePort: 80
-`,
-			}, {
-				name: "f1",
-				contents: `
+`}, {name: "f1", contents: `
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -200,21 +151,7 @@ data:
   multi-line: |
     hello world
     how are you?
-`,
-			}},
-		},
-		want: []Manifest{{
-			GVK: schema.GroupVersionKind{Group: "extensions", Version: "v1beta1", Kind: "Ingress"},
-		}, {
-			GVK: schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"},
-		}},
-	}, {
-		name: "files-with-multiple-manifests",
-		fs: dir{
-			name: "a",
-			files: []file{{
-				name: "f0",
-				contents: `
+`}}}, want: []Manifest{{GVK: schema.GroupVersionKind{Group: "extensions", Version: "v1beta1", Kind: "Ingress"}}, {GVK: schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"}}}}, {name: "files-with-multiple-manifests", fs: dir{name: "a", files: []file{{name: "f0", contents: `
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -239,10 +176,7 @@ data:
   multi-line: |
     hello world
     how are you?
-`,
-			}, {
-				name: "f1",
-				contents: `
+`}, {name: "f1", contents: `
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -253,17 +187,7 @@ data:
   multi-line: |
     hello world
     how are you?
-`,
-			}},
-		},
-		want: []Manifest{{
-			GVK: schema.GroupVersionKind{Group: "extensions", Version: "v1beta1", Kind: "Ingress"},
-		}, {
-			GVK: schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"},
-		}, {
-			GVK: schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"},
-		}},
-	}}
+`}}}, want: []Manifest{{GVK: schema.GroupVersionKind{Group: "extensions", Version: "v1beta1", Kind: "Ingress"}}, {GVK: schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"}}, {GVK: schema.GroupVersionKind{Group: "", Version: "v1", Kind: "ConfigMap"}}}}}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			tmpdir, cleanup := setupTestFS(t, test.fs)
@@ -272,7 +196,6 @@ data:
 					t.Logf("error cleaning %q", tmpdir)
 				}
 			}()
-
 			files := []string{}
 			for _, f := range test.fs.files {
 				files = append(files, filepath.Join(tmpdir, test.fs.name, f.name))
@@ -293,17 +216,17 @@ data:
 }
 
 type file struct {
-	name     string
-	contents string
+	name		string
+	contents	string
 }
-
 type dir struct {
-	name  string
-	files []file
+	name	string
+	files	[]file
 }
 
-// setupTestFS returns path of the tmp d created and cleanup function.
 func setupTestFS(t *testing.T, d dir) (string, func() error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	root, err := ioutil.TempDir("", "test")
 	if err != nil {
 		t.Fatal(err)

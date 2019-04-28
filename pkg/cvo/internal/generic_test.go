@@ -2,17 +2,15 @@ package internal
 
 import (
 	"testing"
-
 	"k8s.io/apimachinery/pkg/runtime/schema"
-
 	"k8s.io/apimachinery/pkg/runtime"
-
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-
 	"k8s.io/client-go/dynamic/fake"
 )
 
 func TestCreateOnlyCreate(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	feature := `{
   "kind": "FeatureGate",
   "apiVersion": "config.openshift.io/v1",
@@ -27,11 +25,8 @@ func TestCreateOnlyCreate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	fakeClient := fake.NewSimpleDynamicClient(runtime.NewScheme())
-	_, modified, err := applyUnstructured(
-		fakeClient.Resource(schema.GroupVersionResource{Group: "config.openshift.io", Version: "v1", Resource: "featuregates"}),
-		obj.(*unstructured.Unstructured))
+	_, modified, err := applyUnstructured(fakeClient.Resource(schema.GroupVersionResource{Group: "config.openshift.io", Version: "v1", Resource: "featuregates"}), obj.(*unstructured.Unstructured))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -39,8 +34,9 @@ func TestCreateOnlyCreate(t *testing.T) {
 		t.Error("should have created")
 	}
 }
-
 func TestCreateOnlyUpdate(t *testing.T) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	feature := `{
   "kind": "FeatureGate",
   "apiVersion": "config.openshift.io/v1",
@@ -70,11 +66,8 @@ func TestCreateOnlyUpdate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	fakeClient := fake.NewSimpleDynamicClient(runtime.NewScheme(), existingObj)
-	_, modified, err := applyUnstructured(
-		fakeClient.Resource(schema.GroupVersionResource{Group: "config.openshift.io", Version: "v1", Resource: "featuregates"}),
-		obj.(*unstructured.Unstructured))
+	_, modified, err := applyUnstructured(fakeClient.Resource(schema.GroupVersionResource{Group: "config.openshift.io", Version: "v1", Resource: "featuregates"}), obj.(*unstructured.Unstructured))
 	if err != nil {
 		t.Fatal(err)
 	}

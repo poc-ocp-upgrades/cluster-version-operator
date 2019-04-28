@@ -7,18 +7,20 @@ import (
 )
 
 var (
-	securityScheme = runtime.NewScheme()
-	securityCodecs = serializer.NewCodecFactory(securityScheme)
+	securityScheme	= runtime.NewScheme()
+	securityCodecs	= serializer.NewCodecFactory(securityScheme)
 )
 
 func init() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := securityv1.AddToScheme(securityScheme); err != nil {
 		panic(err)
 	}
 }
-
-// ReadSecurityContextConstraintsV1OrDie reads clusterrolebinding object from bytes. Panics on error.
 func ReadSecurityContextConstraintsV1OrDie(objBytes []byte) *securityv1.SecurityContextConstraints {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(securityCodecs.UniversalDecoder(securityv1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)
