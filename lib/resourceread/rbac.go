@@ -8,11 +8,13 @@ import (
 )
 
 var (
-	rbacScheme = runtime.NewScheme()
-	rbacCodecs = serializer.NewCodecFactory(rbacScheme)
+	rbacScheme	= runtime.NewScheme()
+	rbacCodecs	= serializer.NewCodecFactory(rbacScheme)
 )
 
 func init() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := rbacv1.AddToScheme(rbacScheme); err != nil {
 		panic(err)
 	}
@@ -20,36 +22,36 @@ func init() {
 		panic(err)
 	}
 }
-
-// ReadClusterRoleBindingV1OrDie reads clusterrolebinding object from bytes. Panics on error.
 func ReadClusterRoleBindingV1OrDie(objBytes []byte) *rbacv1.ClusterRoleBinding {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(rbacCodecs.UniversalDecoder(rbacv1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)
 	}
 	return requiredObj.(*rbacv1.ClusterRoleBinding)
 }
-
-// ReadClusterRoleV1OrDie reads clusterole object from bytes. Panics on error.
 func ReadClusterRoleV1OrDie(objBytes []byte) *rbacv1.ClusterRole {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(rbacCodecs.UniversalDecoder(rbacv1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)
 	}
 	return requiredObj.(*rbacv1.ClusterRole)
 }
-
-// ReadRoleBindingV1OrDie reads clusterrolebinding object from bytes. Panics on error.
 func ReadRoleBindingV1OrDie(objBytes []byte) *rbacv1.RoleBinding {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(rbacCodecs.UniversalDecoder(rbacv1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)
 	}
 	return requiredObj.(*rbacv1.RoleBinding)
 }
-
-// ReadRoleV1OrDie reads clusterole object from bytes. Panics on error.
 func ReadRoleV1OrDie(objBytes []byte) *rbacv1.Role {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(rbacCodecs.UniversalDecoder(rbacv1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)

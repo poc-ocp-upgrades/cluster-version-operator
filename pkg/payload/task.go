@@ -5,86 +5,69 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
-
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
-
 	"github.com/openshift/cluster-version-operator/lib"
 )
 
 var (
-	metricPayloadErrors = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "cluster_operator_payload_errors",
-		Help: "Report the number of errors encountered applying the payload.",
-	}, []string{"version"})
+	metricPayloadErrors = prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: "cluster_operator_payload_errors", Help: "Report the number of errors encountered applying the payload."}, []string{"version"})
 )
 
 func init() {
-	prometheus.MustRegister(
-		metricPayloadErrors,
-	)
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	prometheus.MustRegister(metricPayloadErrors)
 }
 
-// ResourceBuilder abstracts how a manifest is created on the server. Introduced for testing.
 type ResourceBuilder interface {
 	Apply(context.Context, *lib.Manifest, State) error
 }
-
 type Task struct {
-	Index    int
-	Total    int
-	Manifest *lib.Manifest
-	Requeued int
-	Backoff  wait.Backoff
+	Index		int
+	Total		int
+	Manifest	*lib.Manifest
+	Requeued	int
+	Backoff		wait.Backoff
 }
 
 func (st *Task) Copy() *Task {
-	return &Task{
-		Index:    st.Index,
-		Total:    st.Total,
-		Manifest: st.Manifest,
-		Requeued: st.Requeued,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &Task{Index: st.Index, Total: st.Total, Manifest: st.Manifest, Requeued: st.Requeued}
 }
-
 func (st *Task) String() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	ns := st.Manifest.Object().GetNamespace()
 	if len(ns) == 0 {
 		return fmt.Sprintf("%s %q (%d of %d)", strings.ToLower(st.Manifest.GVK.Kind), st.Manifest.Object().GetName(), st.Index, st.Total)
 	}
 	return fmt.Sprintf("%s \"%s/%s\" (%d of %d)", strings.ToLower(st.Manifest.GVK.Kind), ns, st.Manifest.Object().GetName(), st.Index, st.Total)
 }
-
-// Run attempts to create the provided object until it succeeds or context is cancelled. It returns the
-// last error if context is cancelled.
 func (st *Task) Run(ctx context.Context, version string, builder ResourceBuilder, state State) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var lastErr error
 	backoff := st.Backoff
-	maxDuration := 15 * time.Second // TODO: fold back into Backoff in 1.13
+	maxDuration := 15 * time.Second
 	for {
-		// attempt the apply, waiting as long as necessary
 		err := builder.Apply(ctx, st.Manifest, state)
 		if err == nil {
 			return nil
 		}
-
 		lastErr = err
 		utilruntime.HandleError(errors.Wrapf(err, "error running apply for %s", st))
 		metricPayloadErrors.WithLabelValues(version).Inc()
-
-		// TODO: this code will become easier in Kube 1.13 because Backoff now supports max
 		d := time.Duration(float64(backoff.Duration) * backoff.Factor)
 		if d > maxDuration {
 			d = maxDuration
 		}
 		d = wait.Jitter(d, backoff.Jitter)
-
-		// sleep or wait for cancellation
 		select {
 		case <-time.After(d):
 			continue
@@ -97,39 +80,32 @@ func (st *Task) Run(ctx context.Context, version string, builder ResourceBuilder
 			if len(cause) > 0 {
 				cause = ": " + cause
 			}
-			return &UpdateError{
-				Nested:  lastErr,
-				Reason:  reason,
-				Message: fmt.Sprintf("Could not update %s%s", st, cause),
-
-				Task: st.Copy(),
-			}
+			return &UpdateError{Nested: lastErr, Reason: reason, Message: fmt.Sprintf("Could not update %s%s", st, cause), Task: st.Copy()}
 		}
 	}
 }
 
-// UpdateError is a wrapper for errors that occur during a payload sync.
 type UpdateError struct {
-	Nested  error
-	Reason  string
-	Message string
-	Name    string
-
-	Task *Task
+	Nested	error
+	Reason	string
+	Message	string
+	Name	string
+	Task	*Task
 }
 
 func (e *UpdateError) Error() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return e.Message
 }
-
 func (e *UpdateError) Cause() error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return e.Nested
 }
-
-// reasonForUpdateError provides a succint explanation of a known error type for use in a human readable
-// message during update. Since all objects in the image should be successfully applied, messages
-// should direct the reader (likely a cluster administrator) to a possible cause in their own config.
 func reasonForPayloadSyncError(err error) (string, string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	err = errors.Cause(err)
 	switch {
 	case apierrors.IsNotFound(err), apierrors.IsAlreadyExists(err):
@@ -154,11 +130,10 @@ func reasonForPayloadSyncError(err error) (string, string) {
 		return "UpdatePayloadFailed", ""
 	}
 }
-
 func SummaryForReason(reason, name string) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	switch reason {
-
-	// likely temporary errors
 	case "UpdatePayloadResourceNotFound", "UpdatePayloadResourceConflict":
 		return "some resources could not be updated"
 	case "UpdatePayloadClusterDown":
@@ -171,23 +146,16 @@ func SummaryForReason(reason, name string) string {
 		return "could not authenticate to the server"
 	case "UpdatePayloadRetrievalFailed":
 		return "could not download the update"
-
-	// likely a policy or other configuration error due to end user action
 	case "UpdatePayloadResourceForbidden":
 		return "the server is rejecting updates"
-
-	// the image may not be correct, or the cluster may be in an unexpected
-	// state
 	case "UpdatePayloadResourceTypeMissing":
 		return "a required extension is not available to update"
 	case "UpdatePayloadResourceInvalid":
 		return "some cluster configuration is invalid"
 	case "UpdatePayloadIntegrity":
 		return "the contents of the update are invalid"
-
 	case "ImageVerificationFailed":
 		return "the image may not be safe to use"
-
 	case "ClusterOperatorDegraded":
 		if len(name) > 0 {
 			return fmt.Sprintf("the cluster operator %s is degraded", name)
@@ -201,7 +169,6 @@ func SummaryForReason(reason, name string) string {
 	case "ClusterOperatorsNotAvailable":
 		return "some cluster operators have not yet rolled out"
 	}
-
 	if strings.HasPrefix(reason, "UpdatePayload") {
 		return "the update could not be applied"
 	}

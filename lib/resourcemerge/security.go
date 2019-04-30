@@ -5,9 +5,9 @@ import (
 	"k8s.io/apimachinery/pkg/api/equality"
 )
 
-// EnsureSecurityContextConstraints ensures that the existing matches the required.
-// modified is set to true when existing had to be updated with required.
 func EnsureSecurityContextConstraints(modified *bool, existing *securityv1.SecurityContextConstraints, required securityv1.SecurityContextConstraints) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	EnsureObjectMeta(modified, &existing.ObjectMeta, required.ObjectMeta)
 	setInt32Ptr(modified, &existing.Priority, required.Priority)
 	setBool(modified, &existing.AllowPrivilegedContainer, required.AllowPrivilegedContainer)

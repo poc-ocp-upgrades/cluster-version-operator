@@ -8,11 +8,13 @@ import (
 )
 
 var (
-	apiRegScheme = runtime.NewScheme()
-	apiRegCodecs = serializer.NewCodecFactory(apiRegScheme)
+	apiRegScheme	= runtime.NewScheme()
+	apiRegCodecs	= serializer.NewCodecFactory(apiRegScheme)
 )
 
 func init() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := apiregv1beta1.AddToScheme(apiRegScheme); err != nil {
 		panic(err)
 	}
@@ -20,9 +22,9 @@ func init() {
 		panic(err)
 	}
 }
-
-// ReadAPIServiceV1OrDie reads aiservice object from bytes. Panics on error.
 func ReadAPIServiceV1OrDie(objBytes []byte) *apiregv1.APIService {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(apiRegCodecs.UniversalDecoder(apiregv1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)

@@ -5,70 +5,54 @@ import (
 	"fmt"
 	"sync"
 	"time"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/rest"
-
 	"github.com/openshift/cluster-version-operator/lib"
 )
 
 var (
-	// Mapper is default ResourceMapper.
 	Mapper = NewResourceMapper()
 )
 
-// ResourceMapper maps {Group, Version} to a function that returns Interface and an error.
 type ResourceMapper struct {
-	l *sync.Mutex
-
-	gvkToNew map[schema.GroupVersionKind]NewInteraceFunc
+	l		*sync.Mutex
+	gvkToNew	map[schema.GroupVersionKind]NewInteraceFunc
 }
 
-// AddToMap adds all keys from caller to input.
-// Locks the input ResourceMapper before adding the keys from caller.
 func (rm *ResourceMapper) AddToMap(irm *ResourceMapper) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	irm.l.Lock()
 	defer irm.l.Unlock()
 	for k, v := range rm.gvkToNew {
 		irm.gvkToNew[k] = v
 	}
 }
-
-// Exist returns true when gvk is known.
 func (rm *ResourceMapper) Exists(gvk schema.GroupVersionKind) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_, ok := rm.gvkToNew[gvk]
 	return ok
 }
-
-// RegisterGVK adds GVK to NewInteraceFunc mapping.
-// It does not lock before adding the mapping.
 func (rm *ResourceMapper) RegisterGVK(gvk schema.GroupVersionKind, f NewInteraceFunc) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	rm.gvkToNew[gvk] = f
 }
-
-// NewResourceMapper returns a new map.
-// This is required a we cannot push to uninitialized map.
 func NewResourceMapper() *ResourceMapper {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	m := map[schema.GroupVersionKind]NewInteraceFunc{}
-	return &ResourceMapper{
-		l:        &sync.Mutex{},
-		gvkToNew: m,
-	}
+	return &ResourceMapper{l: &sync.Mutex{}, gvkToNew: m}
 }
 
 type MetaV1ObjectModifierFunc func(metav1.Object)
-
-// NewInteraceFunc returns an Interface.
-// It requires rest Config that can be used to create a client
-// and the Manifest.
 type NewInteraceFunc func(rest *rest.Config, m lib.Manifest) Interface
-
-// Mode is how this builder is being used.
 type Mode int
 
 const (
-	UpdatingMode Mode = iota
+	UpdatingMode	Mode	= iota
 	ReconcilingMode
 	InitializingMode
 )
@@ -79,8 +63,9 @@ type Interface interface {
 	Do(context.Context) error
 }
 
-// New returns Interface using the mapping stored in mapper for m Manifest.
 func New(mapper *ResourceMapper, rest *rest.Config, m lib.Manifest) (Interface, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	f, ok := mapper.gvkToNew[m.GVK]
 	if !ok {
 		return nil, fmt.Errorf("No mapping found for gvk: %v", m.GVK)
@@ -88,6 +73,4 @@ func New(mapper *ResourceMapper, rest *rest.Config, m lib.Manifest) (Interface, 
 	return f(rest, m), nil
 }
 
-// defaultObjectPollInterval is the default interval to poll the API to determine whether an object
-// is ready. Use this when a more specific interval is not necessary.
 const defaultObjectPollInterval = 3 * time.Second

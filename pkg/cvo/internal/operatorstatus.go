@@ -8,39 +8,36 @@ import (
 	"strings"
 	"time"
 	"unicode"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/rest"
-
 	configv1 "github.com/openshift/api/config/v1"
 	configclientv1 "github.com/openshift/client-go/config/clientset/versioned/typed/config/v1"
-
 	"github.com/openshift/cluster-version-operator/lib"
 	"github.com/openshift/cluster-version-operator/lib/resourcebuilder"
 	"github.com/openshift/cluster-version-operator/pkg/payload"
 )
 
 var (
-	osScheme = runtime.NewScheme()
-	osCodecs = serializer.NewCodecFactory(osScheme)
-
-	osMapper = resourcebuilder.NewResourceMapper()
+	osScheme	= runtime.NewScheme()
+	osCodecs	= serializer.NewCodecFactory(osScheme)
+	osMapper	= resourcebuilder.NewResourceMapper()
 )
 
 func init() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := configv1.AddToScheme(osScheme); err != nil {
 		panic(err)
 	}
-
 	osMapper.RegisterGVK(configv1.SchemeGroupVersion.WithKind("ClusterOperator"), newClusterOperatorBuilder)
 	osMapper.AddToMap(resourcebuilder.Mapper)
 }
-
-// readClusterOperatorV1OrDie reads clusteroperator object from bytes. Panics on error.
 func readClusterOperatorV1OrDie(objBytes []byte) *configv1.ClusterOperator {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(osCodecs.UniversalDecoder(configv1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)
@@ -49,74 +46,66 @@ func readClusterOperatorV1OrDie(objBytes []byte) *configv1.ClusterOperator {
 }
 
 type clusterOperatorBuilder struct {
-	client   ClusterOperatorsGetter
-	raw      []byte
-	modifier resourcebuilder.MetaV1ObjectModifierFunc
-	mode     resourcebuilder.Mode
+	client		ClusterOperatorsGetter
+	raw		[]byte
+	modifier	resourcebuilder.MetaV1ObjectModifierFunc
+	mode		resourcebuilder.Mode
 }
 
 func newClusterOperatorBuilder(config *rest.Config, m lib.Manifest) resourcebuilder.Interface {
-	return NewClusterOperatorBuilder(clientClusterOperatorsGetter{
-		getter: configclientv1.NewForConfigOrDie(config).ClusterOperators(),
-	}, m)
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return NewClusterOperatorBuilder(clientClusterOperatorsGetter{getter: configclientv1.NewForConfigOrDie(config).ClusterOperators()}, m)
 }
 
-// ClusterOperatorsGetter abstracts object access with a client or a cache lister.
 type ClusterOperatorsGetter interface {
 	Get(name string) (*configv1.ClusterOperator, error)
 }
-
 type clientClusterOperatorsGetter struct {
 	getter configclientv1.ClusterOperatorInterface
 }
 
 func (g clientClusterOperatorsGetter) Get(name string) (*configv1.ClusterOperator, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return g.getter.Get(name, metav1.GetOptions{})
 }
-
-// NewClusterOperatorBuilder accepts the ClusterOperatorsGetter interface which may be implemented by a
-// client or a lister cache.
 func NewClusterOperatorBuilder(client ClusterOperatorsGetter, m lib.Manifest) resourcebuilder.Interface {
-	return &clusterOperatorBuilder{
-		client: client,
-		raw:    m.Raw,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &clusterOperatorBuilder{client: client, raw: m.Raw}
 }
-
 func (b *clusterOperatorBuilder) WithMode(m resourcebuilder.Mode) resourcebuilder.Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.mode = m
 	return b
 }
-
 func (b *clusterOperatorBuilder) WithModifier(f resourcebuilder.MetaV1ObjectModifierFunc) resourcebuilder.Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
-
 func (b *clusterOperatorBuilder) Do(ctx context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	os := readClusterOperatorV1OrDie(b.raw)
 	if b.modifier != nil {
 		b.modifier(os)
 	}
 	return waitForOperatorStatusToBeDone(ctx, 1*time.Second, b.client, os, b.mode)
 }
-
 func waitForOperatorStatusToBeDone(ctx context.Context, interval time.Duration, client ClusterOperatorsGetter, expected *configv1.ClusterOperator, mode resourcebuilder.Mode) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var lastErr error
 	err := wait.PollImmediateUntil(interval, func() (bool, error) {
 		actual, err := client.Get(expected.Name)
 		if err != nil {
-			lastErr = &payload.UpdateError{
-				Nested:  err,
-				Reason:  "ClusterOperatorNotAvailable",
-				Message: fmt.Sprintf("Cluster operator %s has not yet reported success", expected.Name),
-				Name:    expected.Name,
-			}
+			lastErr = &payload.UpdateError{Nested: err, Reason: "ClusterOperatorNotAvailable", Message: fmt.Sprintf("Cluster operator %s has not yet reported success", expected.Name), Name: expected.Name}
 			return false, nil
 		}
-
-		// undone is map of operand to tuple of (expected version, actual version)
-		// for incomplete operands.
 		undone := map[string][]string{}
 		for _, expOp := range expected.Status.Versions {
 			undone[expOp.Name] = []string{expOp.Version}
@@ -136,10 +125,8 @@ func waitForOperatorStatusToBeDone(ctx context.Context, interval time.Duration, 
 				keys = append(keys, k)
 			}
 			sort.Strings(keys)
-
 			var reports []string
 			for _, op := range keys {
-				// we do not need to report `operator` version.
 				if op == "operator" {
 					continue
 				}
@@ -154,15 +141,9 @@ func waitForOperatorStatusToBeDone(ctx context.Context, interval time.Duration, 
 			if len(reports) > 0 {
 				message = fmt.Sprintf("Cluster operator %s is still updating: %s", actual.Name, strings.Join(reports, ", "))
 			}
-			lastErr = &payload.UpdateError{
-				Nested:  errors.New(lowerFirst(message)),
-				Reason:  "ClusterOperatorNotAvailable",
-				Message: message,
-				Name:    actual.Name,
-			}
+			lastErr = &payload.UpdateError{Nested: errors.New(lowerFirst(message)), Reason: "ClusterOperatorNotAvailable", Message: message, Name: actual.Name}
 			return false, nil
 		}
-
 		available := false
 		progressing := true
 		failing := true
@@ -188,28 +169,20 @@ func waitForOperatorStatusToBeDone(ctx context.Context, interval time.Duration, 
 				degradedCondition = condition
 			}
 		}
-
-		// If degraded was an explicitly set condition, use that. If not, use the deprecated failing.
 		degraded := failing
 		if degradedCondition != nil {
 			degraded = degradedValue
 		}
-
 		switch mode {
 		case resourcebuilder.InitializingMode:
-			// during initialization we allow degraded as long as the component goes available
 			if available && (!progressing || len(expected.Status.Versions) > 0) {
 				return true, nil
 			}
 		default:
-			// if we're at the correct version, and available, and not degraded, we are done
-			// if we're available, not degraded, and not progressing, we're also done
-			// TODO: remove progressing once all cluster operators report expected versions
 			if available && (!progressing || len(expected.Status.Versions) > 0) && !degraded {
 				return true, nil
 			}
 		}
-
 		condition := failingCondition
 		if degradedCondition != nil {
 			condition = degradedCondition
@@ -219,23 +192,10 @@ func waitForOperatorStatusToBeDone(ctx context.Context, interval time.Duration, 
 			if len(condition.Message) > 0 {
 				message = fmt.Sprintf("Cluster operator %s is reporting a failure: %s", actual.Name, condition.Message)
 			}
-			lastErr = &payload.UpdateError{
-				Nested:  errors.New(lowerFirst(message)),
-				Reason:  "ClusterOperatorDegraded",
-				Message: message,
-				Name:    actual.Name,
-			}
+			lastErr = &payload.UpdateError{Nested: errors.New(lowerFirst(message)), Reason: "ClusterOperatorDegraded", Message: message, Name: actual.Name}
 			return false, nil
 		}
-
-		lastErr = &payload.UpdateError{
-			Nested: fmt.Errorf("cluster operator %s is not done; it is available=%v, progressing=%v, degraded=%v",
-				actual.Name, available, progressing, degraded,
-			),
-			Reason:  "ClusterOperatorNotAvailable",
-			Message: fmt.Sprintf("Cluster operator %s has not yet reported success", actual.Name),
-			Name:    actual.Name,
-		}
+		lastErr = &payload.UpdateError{Nested: fmt.Errorf("cluster operator %s is not done; it is available=%v, progressing=%v, degraded=%v", actual.Name, available, progressing, degraded), Reason: "ClusterOperatorNotAvailable", Message: fmt.Sprintf("Cluster operator %s has not yet reported success", actual.Name), Name: actual.Name}
 		return false, nil
 	}, ctx.Done())
 	if err != nil {
@@ -246,8 +206,9 @@ func waitForOperatorStatusToBeDone(ctx context.Context, interval time.Duration, 
 	}
 	return nil
 }
-
 func lowerFirst(str string) string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for i, v := range str {
 		return string(unicode.ToLower(v)) + str[i+1:]
 	}
