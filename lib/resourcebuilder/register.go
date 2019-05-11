@@ -13,6 +13,8 @@ import (
 )
 
 func init() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	rm := NewResourceMapper()
 	rm.RegisterGVK(apiextv1beta1.SchemeGroupVersion.WithKind("CustomResourceDefinition"), newCRDBuilder)
 	rm.RegisterGVK(apiregv1.SchemeGroupVersion.WithKind("APIService"), newAPIServiceBuilder)
@@ -33,6 +35,5 @@ func init() {
 	rm.RegisterGVK(rbacv1beta1.SchemeGroupVersion.WithKind("Role"), newRoleBuilder)
 	rm.RegisterGVK(rbacv1beta1.SchemeGroupVersion.WithKind("RoleBinding"), newRoleBindingBuilder)
 	rm.RegisterGVK(securityv1.SchemeGroupVersion.WithKind("SecurityContextConstraints"), newSecurityBuilder)
-
 	rm.AddToMap(Mapper)
 }

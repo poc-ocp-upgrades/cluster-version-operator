@@ -3,9 +3,7 @@ package resourcebuilder
 import (
 	"context"
 	"fmt"
-
 	"github.com/golang/glog"
-
 	"github.com/openshift/cluster-version-operator/lib"
 	"github.com/openshift/cluster-version-operator/lib/resourceapply"
 	"github.com/openshift/cluster-version-operator/lib/resourceread"
@@ -18,28 +16,30 @@ import (
 )
 
 type deploymentBuilder struct {
-	client   *appsclientv1.AppsV1Client
-	raw      []byte
-	modifier MetaV1ObjectModifierFunc
+	client		*appsclientv1.AppsV1Client
+	raw			[]byte
+	modifier	MetaV1ObjectModifierFunc
 }
 
 func newDeploymentBuilder(config *rest.Config, m lib.Manifest) Interface {
-	return &deploymentBuilder{
-		client: appsclientv1.NewForConfigOrDie(withProtobuf(config)),
-		raw:    m.Raw,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &deploymentBuilder{client: appsclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
-
 func (b *deploymentBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return b
 }
-
 func (b *deploymentBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
-
 func (b *deploymentBuilder) Do(ctx context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	deployment := resourceread.ReadDeploymentV1OrDie(b.raw)
 	if b.modifier != nil {
 		b.modifier(deployment)
@@ -54,23 +54,20 @@ func (b *deploymentBuilder) Do(ctx context.Context) error {
 	return nil
 }
 func waitForDeploymentCompletion(ctx context.Context, client appsclientv1.DeploymentsGetter, deployment *appsv1.Deployment) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return wait.PollImmediateUntil(defaultObjectPollInterval, func() (bool, error) {
 		d, err := client.Deployments(deployment.Namespace).Get(deployment.Name, metav1.GetOptions{})
 		if errors.IsNotFound(err) {
-			// exit early to recreate the deployment.
 			return false, err
 		}
 		if err != nil {
-			// Do not return error here, as we could be updating the API Server itself, in which case we
-			// want to continue waiting.
 			glog.Errorf("error getting Deployment %s during rollout: %v", deployment.Name, err)
 			return false, nil
 		}
-
 		if d.DeletionTimestamp != nil {
 			return false, fmt.Errorf("Deployment %s is being deleted", deployment.Name)
 		}
-
 		if d.Generation <= d.Status.ObservedGeneration && d.Status.UpdatedReplicas == d.Status.Replicas && d.Status.UnavailableReplicas == 0 {
 			return true, nil
 		}
@@ -80,28 +77,30 @@ func waitForDeploymentCompletion(ctx context.Context, client appsclientv1.Deploy
 }
 
 type daemonsetBuilder struct {
-	client   *appsclientv1.AppsV1Client
-	raw      []byte
-	modifier MetaV1ObjectModifierFunc
+	client		*appsclientv1.AppsV1Client
+	raw			[]byte
+	modifier	MetaV1ObjectModifierFunc
 }
 
 func newDaemonsetBuilder(config *rest.Config, m lib.Manifest) Interface {
-	return &daemonsetBuilder{
-		client: appsclientv1.NewForConfigOrDie(withProtobuf(config)),
-		raw:    m.Raw,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &daemonsetBuilder{client: appsclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
-
 func (b *daemonsetBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return b
 }
-
 func (b *daemonsetBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
-
 func (b *daemonsetBuilder) Do(ctx context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	daemonset := resourceread.ReadDaemonSetV1OrDie(b.raw)
 	if b.modifier != nil {
 		b.modifier(daemonset)
@@ -115,25 +114,21 @@ func (b *daemonsetBuilder) Do(ctx context.Context) error {
 	}
 	return nil
 }
-
 func waitForDaemonsetRollout(ctx context.Context, client appsclientv1.DaemonSetsGetter, daemonset *appsv1.DaemonSet) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return wait.PollImmediateUntil(defaultObjectPollInterval, func() (bool, error) {
 		d, err := client.DaemonSets(daemonset.Namespace).Get(daemonset.Name, metav1.GetOptions{})
 		if errors.IsNotFound(err) {
-			// exit early to recreate the daemonset.
 			return false, err
 		}
 		if err != nil {
-			// Do not return error here, as we could be updating the API Server itself, in which case we
-			// want to continue waiting.
 			glog.Errorf("error getting Daemonset %s during rollout: %v", daemonset.Name, err)
 			return false, nil
 		}
-
 		if d.DeletionTimestamp != nil {
 			return false, fmt.Errorf("Daemonset %s is being deleted", daemonset.Name)
 		}
-
 		if d.Generation <= d.Status.ObservedGeneration && d.Status.UpdatedNumberScheduled == d.Status.DesiredNumberScheduled && d.Status.NumberUnavailable == 0 {
 			return true, nil
 		}

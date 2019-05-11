@@ -8,62 +8,36 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-
 	"github.com/golang/glog"
 	"github.com/pkg/errors"
-
 	utilerrors "k8s.io/apimachinery/pkg/util/errors"
 	"k8s.io/apimachinery/pkg/util/sets"
-
 	imagev1 "github.com/openshift/api/image/v1"
-
 	"github.com/openshift/cluster-version-operator/lib"
 	"github.com/openshift/cluster-version-operator/lib/resourceread"
 )
 
-// State describes the state of the payload and alters
-// how a payload is applied.
 type State int
 
 const (
-	// UpdatingPayload indicates we are moving from one state to
-	// another.
-	//
-	// When we are moving to a different payload version, we want to
-	// be as conservative as possible about ordering of the payload
-	// and the errors we might encounter. An error in one operator
-	// should prevent dependent operators from changing. We are
-	// willing to take longer to roll out an update if it reduces
-	// the possibility of error.
-	UpdatingPayload State = iota
-	// ReconcilingPayload indicates we are attempting to maintain
-	// our current state.
-	//
-	// When the payload has already been applied to the cluster, we
-	// prioritize ensuring resources are recreated and don't need to
-	// progress in strict order. We also attempt to reset as many
-	// resources as possible back to their desired state and report
-	// errors after the fact.
+	UpdatingPayload	State	= iota
 	ReconcilingPayload
-	// InitializingPayload indicates we are establishing our first
-	// state.
-	//
-	// When we are deploying a payload for the first time we want
-	// to make progress quickly but in a predictable order to
-	// minimize retries and crash-loops. We wait for operators
-	// to report level but tolerate degraded and transient errors.
-	// Our goal is to get the entire payload created, even if some
-	// operators are still converging.
 	InitializingPayload
 )
 
-// Initializing is true if the state is InitializingPayload.
-func (s State) Initializing() bool { return s == InitializingPayload }
-
-// Reconciling is true if the state is ReconcilingPayload.
-func (s State) Reconciling() bool { return s == ReconcilingPayload }
-
+func (s State) Initializing() bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return s == InitializingPayload
+}
+func (s State) Reconciling() bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return s == ReconcilingPayload
+}
 func (s State) String() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	switch s {
 	case ReconcilingPayload:
 		return "Reconciling"
@@ -77,33 +51,28 @@ func (s State) String() string {
 }
 
 const (
-	DefaultPayloadDir = "/"
-
-	CVOManifestDir     = "manifests"
-	ReleaseManifestDir = "release-manifests"
-
-	cincinnatiJSONFile  = "release-metadata"
-	imageReferencesFile = "image-references"
+	DefaultPayloadDir	= "/"
+	CVOManifestDir		= "manifests"
+	ReleaseManifestDir	= "release-manifests"
+	cincinnatiJSONFile	= "release-metadata"
+	imageReferencesFile	= "image-references"
 )
 
 type Update struct {
-	ReleaseImage   string
-	ReleaseVersion string
-	// XXX: cincinatti.json struct
-
-	ImageRef *imagev1.ImageStream
-
-	// manifestHash is a hash of the manifests included in this payload
-	ManifestHash string
-	Manifests    []lib.Manifest
+	ReleaseImage	string
+	ReleaseVersion	string
+	ImageRef		*imagev1.ImageStream
+	ManifestHash	string
+	Manifests		[]lib.Manifest
 }
 
 func LoadUpdate(dir, releaseImage string) (*Update, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	payload, tasks, err := loadUpdatePayloadMetadata(dir, releaseImage)
 	if err != nil {
 		return nil, err
 	}
-
 	var manifests []lib.Manifest
 	var errs []error
 	for _, task := range tasks {
@@ -111,23 +80,19 @@ func LoadUpdate(dir, releaseImage string) (*Update, error) {
 		if err != nil {
 			return nil, err
 		}
-
 		for _, file := range files {
 			if file.IsDir() {
 				continue
 			}
-
 			switch filepath.Ext(file.Name()) {
 			case ".yaml", ".yml", ".json":
 			default:
 				continue
 			}
-
 			p := filepath.Join(task.idir, file.Name())
 			if task.skipFiles.Has(p) {
 				continue
 			}
-
 			raw, err := ioutil.ReadFile(p)
 			if err != nil {
 				errs = append(errs, errors.Wrapf(err, "error reading file %s", file.Name()))
@@ -151,33 +116,21 @@ func LoadUpdate(dir, releaseImage string) (*Update, error) {
 			manifests = append(manifests, ms...)
 		}
 	}
-
 	agg := utilerrors.NewAggregate(errs)
 	if agg != nil {
-		return nil, &UpdateError{
-			Reason:  "UpdatePayloadIntegrity",
-			Message: fmt.Sprintf("Error loading manifests from %s: %v", dir, agg.Error()),
-		}
+		return nil, &UpdateError{Reason: "UpdatePayloadIntegrity", Message: fmt.Sprintf("Error loading manifests from %s: %v", dir, agg.Error())}
 	}
-
 	hash := fnv.New64()
 	for _, manifest := range manifests {
 		hash.Write(manifest.Raw)
 	}
-
 	payload.ManifestHash = base64.URLEncoding.EncodeToString(hash.Sum(nil))
 	payload.Manifests = manifests
 	return payload, nil
 }
-
-// ValidateDirectory checks if a directory can be a candidate update by
-// looking for known files. It returns an error if the directory cannot
-// be an update.
 func ValidateDirectory(dir string) error {
-	// XXX: validate that cincinnati.json is correct
-	// 		validate image-references files is correct.
-
-	// make sure cvo and release manifests dirs exist.
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	_, err := os.Stat(filepath.Join(dir, CVOManifestDir))
 	if err != nil {
 		return err
@@ -187,8 +140,6 @@ func ValidateDirectory(dir string) error {
 	if err != nil {
 		return err
 	}
-
-	// make sure image-references file exists in releaseDir
 	_, err = os.Stat(filepath.Join(releaseDir, imageReferencesFile))
 	if err != nil {
 		return err
@@ -197,44 +148,35 @@ func ValidateDirectory(dir string) error {
 }
 
 type payloadTasks struct {
-	idir       string
-	preprocess func([]byte) ([]byte, error)
-	skipFiles  sets.String
+	idir		string
+	preprocess	func([]byte) ([]byte, error)
+	skipFiles	sets.String
 }
 
 func loadUpdatePayloadMetadata(dir, releaseImage string) (*Update, []payloadTasks, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	glog.V(4).Infof("Loading updatepayload from %q", dir)
 	if err := ValidateDirectory(dir); err != nil {
 		return nil, nil, err
 	}
 	var (
-		cvoDir     = filepath.Join(dir, CVOManifestDir)
-		releaseDir = filepath.Join(dir, ReleaseManifestDir)
+		cvoDir		= filepath.Join(dir, CVOManifestDir)
+		releaseDir	= filepath.Join(dir, ReleaseManifestDir)
 	)
-
-	// XXX: load cincinnatiJSONFile
 	cjf := filepath.Join(releaseDir, cincinnatiJSONFile)
-	// XXX: load imageReferencesFile
 	irf := filepath.Join(releaseDir, imageReferencesFile)
 	imageRefData, err := ioutil.ReadFile(irf)
 	if err != nil {
 		return nil, nil, err
 	}
-
 	imageRef, err := resourceread.ReadImageStreamV1(imageRefData)
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "invalid image-references data %s", irf)
 	}
-
 	mrc := manifestRenderConfig{ReleaseImage: releaseImage}
-	tasks := []payloadTasks{{
-		idir:       cvoDir,
-		preprocess: func(ib []byte) ([]byte, error) { return renderManifest(mrc, ib) },
-		skipFiles:  sets.NewString(),
-	}, {
-		idir:       releaseDir,
-		preprocess: nil,
-		skipFiles:  sets.NewString(cjf, irf),
-	}}
+	tasks := []payloadTasks{{idir: cvoDir, preprocess: func(ib []byte) ([]byte, error) {
+		return renderManifest(mrc, ib)
+	}, skipFiles: sets.NewString()}, {idir: releaseDir, preprocess: nil, skipFiles: sets.NewString(cjf, irf)}}
 	return &Update{ImageRef: imageRef, ReleaseImage: releaseImage, ReleaseVersion: imageRef.Name}, tasks, nil
 }

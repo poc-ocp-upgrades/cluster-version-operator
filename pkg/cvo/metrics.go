@@ -2,48 +2,36 @@ package cvo
 
 import (
 	"time"
-
 	"k8s.io/apimachinery/pkg/util/sets"
-
 	"github.com/prometheus/client_golang/prometheus"
-
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"
-
 	configv1 "github.com/openshift/api/config/v1"
-
 	"github.com/openshift/cluster-version-operator/lib/resourcemerge"
 )
 
 func (optr *Operator) registerMetrics(coInformer cache.SharedInformer) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	m := newOperatorMetrics(optr)
-	coInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
-		UpdateFunc: m.clusterOperatorChanged,
-	})
+	coInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{UpdateFunc: m.clusterOperatorChanged})
 	return prometheus.Register(m)
 }
 
 type operatorMetrics struct {
-	optr *Operator
-
-	conditionTransitions map[conditionKey]int
-
-	version                             *prometheus.GaugeVec
-	availableUpdates                    *prometheus.GaugeVec
-	clusterOperatorUp                   *prometheus.GaugeVec
-	clusterOperatorConditions           *prometheus.GaugeVec
-	clusterOperatorConditionTransitions *prometheus.GaugeVec
+	optr								*Operator
+	conditionTransitions				map[conditionKey]int
+	version								*prometheus.GaugeVec
+	availableUpdates					*prometheus.GaugeVec
+	clusterOperatorUp					*prometheus.GaugeVec
+	clusterOperatorConditions			*prometheus.GaugeVec
+	clusterOperatorConditionTransitions	*prometheus.GaugeVec
 }
 
 func newOperatorMetrics(optr *Operator) *operatorMetrics {
-	return &operatorMetrics{
-		optr: optr,
-
-		conditionTransitions: make(map[conditionKey]int),
-
-		version: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "cluster_version",
-			Help: `Reports the version of the cluster in terms of seconds since
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &operatorMetrics{optr: optr, conditionTransitions: make(map[conditionKey]int), version: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: "cluster_version", Help: `Reports the version of the cluster in terms of seconds since
 the epoch. Type 'current' is the version being applied and
 the value is the creation date of the payload. The type
 'desired' is returned if spec.desiredUpdate is set but the
@@ -57,34 +45,17 @@ cluster version object. The type 'updating' is set when
 the cluster is transitioning to a new version but has not
 reached the completed state and is the time the update was
 started.
-.`,
-		}, []string{"type", "version", "image"}),
-		availableUpdates: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "cluster_version_available_updates",
-			Help: "Report the count of available versions for an upstream and channel.",
-		}, []string{"upstream", "channel"}),
-		clusterOperatorUp: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "cluster_operator_up",
-			Help: "Reports key highlights of the active cluster operators.",
-		}, []string{"name", "version"}),
-		clusterOperatorConditions: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "cluster_operator_conditions",
-			Help: "Report the conditions for active cluster operators. 0 is False and 1 is True.",
-		}, []string{"name", "condition"}),
-		clusterOperatorConditionTransitions: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "cluster_operator_condition_transitions",
-			Help: "Reports the number of times that a condition on a cluster operator changes status",
-		}, []string{"name", "condition"}),
-	}
+.`}, []string{"type", "version", "image"}), availableUpdates: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: "cluster_version_available_updates", Help: "Report the count of available versions for an upstream and channel."}, []string{"upstream", "channel"}), clusterOperatorUp: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: "cluster_operator_up", Help: "Reports key highlights of the active cluster operators."}, []string{"name", "version"}), clusterOperatorConditions: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: "cluster_operator_conditions", Help: "Report the conditions for active cluster operators. 0 is False and 1 is True."}, []string{"name", "condition"}), clusterOperatorConditionTransitions: prometheus.NewGaugeVec(prometheus.GaugeOpts{Name: "cluster_operator_condition_transitions", Help: "Reports the number of times that a condition on a cluster operator changes status"}, []string{"name", "condition"})}
 }
 
 type conditionKey struct {
-	Name string
-	Type string
+	Name	string
+	Type	string
 }
 
-// clusterOperatorChanged detects condition transitions and records them
 func (m *operatorMetrics) clusterOperatorChanged(oldObj, obj interface{}) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	oldCO, ok := oldObj.(*configv1.ClusterOperator)
 	if !ok {
 		return
@@ -117,16 +88,18 @@ func (m *operatorMetrics) clusterOperatorChanged(oldObj, obj interface{}) {
 		m.conditionTransitions[conditionKey{Name: co.Name, Type: string(newer.Type)}]++
 	}
 }
-
 func (m *operatorMetrics) Describe(ch chan<- *prometheus.Desc) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	ch <- m.version.WithLabelValues("", "", "").Desc()
 	ch <- m.availableUpdates.WithLabelValues("", "").Desc()
 	ch <- m.clusterOperatorUp.WithLabelValues("", "").Desc()
 	ch <- m.clusterOperatorConditions.WithLabelValues("", "").Desc()
 	ch <- m.clusterOperatorConditionTransitions.WithLabelValues("", "").Desc()
 }
-
 func (m *operatorMetrics) Collect(ch chan<- prometheus.Metric) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	current := m.optr.currentVersion()
 	g := m.version.WithLabelValues("current", current.Version, current.Image)
 	if m.optr.releaseCreated.IsZero() {
@@ -136,12 +109,9 @@ func (m *operatorMetrics) Collect(ch chan<- prometheus.Metric) {
 	}
 	ch <- g
 	if cv, err := m.optr.cvLister.Get(m.optr.name); err == nil {
-		// output cluster version
-
 		g := m.version.WithLabelValues("cluster", current.Version, current.Image)
 		g.Set(float64(cv.CreationTimestamp.Unix()))
 		ch <- g
-
 		failing := resourcemerge.FindOperatorStatusCondition(cv.Status.Conditions, configv1.OperatorFailing)
 		if update := cv.Spec.DesiredUpdate; update != nil && update.Image != current.Image {
 			g := m.version.WithLabelValues("desired", update.Version, update.Image)
@@ -166,8 +136,6 @@ func (m *operatorMetrics) Collect(ch chan<- prometheus.Metric) {
 			}
 			ch <- g
 		}
-
-		// record the last completed update is completed at least once (1) or no completed update has been applied (0)
 		var completedUpdate configv1.Update
 		completed := float64(0)
 		for _, history := range cv.Status.History {
@@ -181,8 +149,6 @@ func (m *operatorMetrics) Collect(ch chan<- prometheus.Metric) {
 		g = m.version.WithLabelValues("completed", completedUpdate.Version, completedUpdate.Image)
 		g.Set(completed)
 		ch <- g
-
-		// when the CVO is transitioning towards a new version report a unique series describing it
 		if len(cv.Status.History) > 0 && cv.Status.History[0].State == configv1.PartialUpdate {
 			updating := cv.Status.History[0]
 			g := m.version.WithLabelValues("updating", updating.Version, updating.Image)
@@ -193,7 +159,6 @@ func (m *operatorMetrics) Collect(ch chan<- prometheus.Metric) {
 			}
 			ch <- g
 		}
-
 		if len(cv.Spec.Upstream) > 0 || len(cv.Status.AvailableUpdates) > 0 || resourcemerge.IsOperatorStatusConditionTrue(cv.Status.Conditions, configv1.RetrievedUpdates) {
 			upstream := "<default>"
 			if len(cv.Spec.Upstream) > 0 {
@@ -204,11 +169,8 @@ func (m *operatorMetrics) Collect(ch chan<- prometheus.Metric) {
 			ch <- g
 		}
 	}
-
-	// output cluster operator version and condition info
 	operators, _ := m.optr.coLister.List(labels.Everything())
 	for _, op := range operators {
-		// TODO: when we define how version works, report the appropriate version
 		var firstVersion string
 		for _, v := range op.Status.Versions {
 			firstVersion = v.Version
@@ -236,17 +198,15 @@ func (m *operatorMetrics) Collect(ch chan<- prometheus.Metric) {
 			ch <- g
 		}
 	}
-
 	for key, value := range m.conditionTransitions {
 		g := m.clusterOperatorConditionTransitions.WithLabelValues(key.Name, key.Type)
 		g.Set(float64(value))
 		ch <- g
 	}
 }
-
-// mostRecentTimestamp finds the most recent change recorded to the status and
-// returns the seconds since the epoch.
 func mostRecentTimestamp(cv *configv1.ClusterVersion) int64 {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var latest time.Time
 	if len(cv.Status.History) > 0 {
 		latest = cv.Status.History[0].StartedTime.Time

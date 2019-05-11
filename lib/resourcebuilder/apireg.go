@@ -2,7 +2,6 @@ package resourcebuilder
 
 import (
 	"context"
-
 	"github.com/openshift/cluster-version-operator/lib"
 	"github.com/openshift/cluster-version-operator/lib/resourceapply"
 	"github.com/openshift/cluster-version-operator/lib/resourceread"
@@ -11,28 +10,30 @@ import (
 )
 
 type apiServiceBuilder struct {
-	client   *apiregclientv1.ApiregistrationV1Client
-	raw      []byte
-	modifier MetaV1ObjectModifierFunc
+	client		*apiregclientv1.ApiregistrationV1Client
+	raw			[]byte
+	modifier	MetaV1ObjectModifierFunc
 }
 
 func newAPIServiceBuilder(config *rest.Config, m lib.Manifest) Interface {
-	return &apiServiceBuilder{
-		client: apiregclientv1.NewForConfigOrDie(config),
-		raw:    m.Raw,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &apiServiceBuilder{client: apiregclientv1.NewForConfigOrDie(config), raw: m.Raw}
 }
-
 func (b *apiServiceBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return b
 }
-
 func (b *apiServiceBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
-
 func (b *apiServiceBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	apiService := resourceread.ReadAPIServiceV1OrDie(b.raw)
 	if b.modifier != nil {
 		b.modifier(apiService)

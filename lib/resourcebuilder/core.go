@@ -2,7 +2,6 @@ package resourcebuilder
 
 import (
 	"context"
-
 	"github.com/openshift/cluster-version-operator/lib"
 	"github.com/openshift/cluster-version-operator/lib/resourceapply"
 	"github.com/openshift/cluster-version-operator/lib/resourceread"
@@ -11,28 +10,30 @@ import (
 )
 
 type serviceAccountBuilder struct {
-	client   *coreclientv1.CoreV1Client
-	raw      []byte
-	modifier MetaV1ObjectModifierFunc
+	client		*coreclientv1.CoreV1Client
+	raw			[]byte
+	modifier	MetaV1ObjectModifierFunc
 }
 
 func newServiceAccountBuilder(config *rest.Config, m lib.Manifest) Interface {
-	return &serviceAccountBuilder{
-		client: coreclientv1.NewForConfigOrDie(withProtobuf(config)),
-		raw:    m.Raw,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &serviceAccountBuilder{client: coreclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
-
 func (b *serviceAccountBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return b
 }
-
 func (b *serviceAccountBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
-
 func (b *serviceAccountBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	serviceAccount := resourceread.ReadServiceAccountV1OrDie(b.raw)
 	if b.modifier != nil {
 		b.modifier(serviceAccount)
@@ -42,28 +43,30 @@ func (b *serviceAccountBuilder) Do(_ context.Context) error {
 }
 
 type configMapBuilder struct {
-	client   *coreclientv1.CoreV1Client
-	raw      []byte
-	modifier MetaV1ObjectModifierFunc
+	client		*coreclientv1.CoreV1Client
+	raw			[]byte
+	modifier	MetaV1ObjectModifierFunc
 }
 
 func newConfigMapBuilder(config *rest.Config, m lib.Manifest) Interface {
-	return &configMapBuilder{
-		client: coreclientv1.NewForConfigOrDie(withProtobuf(config)),
-		raw:    m.Raw,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &configMapBuilder{client: coreclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
-
 func (b *configMapBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return b
 }
-
 func (b *configMapBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
-
 func (b *configMapBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	configMap := resourceread.ReadConfigMapV1OrDie(b.raw)
 	if b.modifier != nil {
 		b.modifier(configMap)
@@ -73,28 +76,30 @@ func (b *configMapBuilder) Do(_ context.Context) error {
 }
 
 type namespaceBuilder struct {
-	client   *coreclientv1.CoreV1Client
-	raw      []byte
-	modifier MetaV1ObjectModifierFunc
+	client		*coreclientv1.CoreV1Client
+	raw			[]byte
+	modifier	MetaV1ObjectModifierFunc
 }
 
 func newNamespaceBuilder(config *rest.Config, m lib.Manifest) Interface {
-	return &namespaceBuilder{
-		client: coreclientv1.NewForConfigOrDie(withProtobuf(config)),
-		raw:    m.Raw,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &namespaceBuilder{client: coreclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
-
 func (b *namespaceBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return b
 }
-
 func (b *namespaceBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
-
 func (b *namespaceBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	namespace := resourceread.ReadNamespaceV1OrDie(b.raw)
 	if b.modifier != nil {
 		b.modifier(namespace)
@@ -104,28 +109,30 @@ func (b *namespaceBuilder) Do(_ context.Context) error {
 }
 
 type serviceBuilder struct {
-	client   *coreclientv1.CoreV1Client
-	raw      []byte
-	modifier MetaV1ObjectModifierFunc
+	client		*coreclientv1.CoreV1Client
+	raw			[]byte
+	modifier	MetaV1ObjectModifierFunc
 }
 
 func newServiceBuilder(config *rest.Config, m lib.Manifest) Interface {
-	return &serviceBuilder{
-		client: coreclientv1.NewForConfigOrDie(withProtobuf(config)),
-		raw:    m.Raw,
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &serviceBuilder{client: coreclientv1.NewForConfigOrDie(withProtobuf(config)), raw: m.Raw}
 }
-
 func (b *serviceBuilder) WithMode(m Mode) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return b
 }
-
 func (b *serviceBuilder) WithModifier(f MetaV1ObjectModifierFunc) Interface {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	b.modifier = f
 	return b
 }
-
 func (b *serviceBuilder) Do(_ context.Context) error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	service := resourceread.ReadServiceV1OrDie(b.raw)
 	if b.modifier != nil {
 		b.modifier(service)

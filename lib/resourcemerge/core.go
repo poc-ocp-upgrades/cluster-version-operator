@@ -2,29 +2,25 @@ package resourcemerge
 
 import (
 	"reflect"
-
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/equality"
 )
 
-// EnsureConfigMap ensures that the existing matches the required.
-// modified is set to true when existing had to be updated with required.
 func EnsureConfigMap(modified *bool, existing *corev1.ConfigMap, required corev1.ConfigMap) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	EnsureObjectMeta(modified, &existing.ObjectMeta, required.ObjectMeta)
-
 	mergeMap(modified, &existing.Data, required.Data)
 }
-
-// ensurePodTemplateSpec ensures that the existing matches the required.
-// modified is set to true when existing had to be updated with required.
 func ensurePodTemplateSpec(modified *bool, existing *corev1.PodTemplateSpec, required corev1.PodTemplateSpec) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	EnsureObjectMeta(modified, &existing.ObjectMeta, required.ObjectMeta)
-
 	ensurePodSpec(modified, &existing.Spec, required.Spec)
 }
-
 func ensurePodSpec(modified *bool, existing *corev1.PodSpec, required corev1.PodSpec) {
-	// any container we specify, we require.
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, required := range required.InitContainers {
 		var existingCurr *corev1.Container
 		for j, curr := range existing.InitContainers {
@@ -40,7 +36,6 @@ func ensurePodSpec(modified *bool, existing *corev1.PodSpec, required corev1.Pod
 		}
 		ensureContainer(modified, existingCurr, required)
 	}
-
 	for _, required := range required.Containers {
 		var existingCurr *corev1.Container
 		for j, curr := range existing.Containers {
@@ -56,8 +51,6 @@ func ensurePodSpec(modified *bool, existing *corev1.PodSpec, required corev1.Pod
 		}
 		ensureContainer(modified, existingCurr, required)
 	}
-
-	// any volume we specify, we require.
 	for _, required := range required.Volumes {
 		var existingCurr *corev1.Volume
 		for j, curr := range existing.Volumes {
@@ -73,14 +66,12 @@ func ensurePodSpec(modified *bool, existing *corev1.PodSpec, required corev1.Pod
 		}
 		ensureVolume(modified, existingCurr, required)
 	}
-
 	if len(required.RestartPolicy) > 0 {
 		if existing.RestartPolicy != required.RestartPolicy {
 			*modified = true
 			existing.RestartPolicy = required.RestartPolicy
 		}
 	}
-
 	setStringIfSet(modified, &existing.ServiceAccountName, required.ServiceAccountName)
 	setBool(modified, &existing.HostNetwork, required.HostNetwork)
 	mergeMap(modified, &existing.NodeSelector, required.NodeSelector)
@@ -90,19 +81,16 @@ func ensurePodSpec(modified *bool, existing *corev1.PodSpec, required corev1.Pod
 	setStringIfSet(modified, &existing.PriorityClassName, required.PriorityClassName)
 	setInt32Ptr(modified, &existing.Priority, required.Priority)
 }
-
 func ensureContainer(modified *bool, existing *corev1.Container, required corev1.Container) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	setStringIfSet(modified, &existing.Name, required.Name)
 	setStringIfSet(modified, &existing.Image, required.Image)
-
-	// if you want modify the launch, you need to modify it in the config, not in the launch args
 	setStringSlice(modified, &existing.Command, required.Command)
 	setStringSlice(modified, &existing.Args, required.Args)
 	ensureEnvVar(modified, &existing.Env, required.Env)
 	ensureEnvFromSource(modified, &existing.EnvFrom, required.EnvFrom)
 	setStringIfSet(modified, &existing.WorkingDir, required.WorkingDir)
-
-	// any port we specify, we require
 	for _, required := range required.Ports {
 		var existingCurr *corev1.ContainerPort
 		for j, curr := range existing.Ports {
@@ -118,8 +106,6 @@ func ensureContainer(modified *bool, existing *corev1.Container, required corev1
 		}
 		ensureContainerPort(modified, existingCurr, required)
 	}
-
-	// any volume mount we specify, we require
 	for _, required := range required.VolumeMounts {
 		var existingCurr *corev1.VolumeMount
 		for j, curr := range existing.VolumeMounts {
@@ -135,19 +121,17 @@ func ensureContainer(modified *bool, existing *corev1.Container, required corev1
 		}
 		ensureVolumeMount(modified, existingCurr, required)
 	}
-
 	if required.LivenessProbe != nil {
 		ensureProbePtr(modified, &existing.LivenessProbe, required.LivenessProbe)
 	}
 	if required.ReadinessProbe != nil {
 		ensureProbePtr(modified, &existing.ReadinessProbe, required.ReadinessProbe)
 	}
-
-	// our security context should always win
 	ensureSecurityContextPtr(modified, &existing.SecurityContext, required.SecurityContext)
 }
-
 func ensureEnvVar(modified *bool, existing *[]corev1.EnvVar, required []corev1.EnvVar) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required == nil {
 		return
 	}
@@ -156,8 +140,9 @@ func ensureEnvVar(modified *bool, existing *[]corev1.EnvVar, required []corev1.E
 		*modified = true
 	}
 }
-
 func ensureEnvFromSource(modified *bool, existing *[]corev1.EnvFromSource, required []corev1.EnvFromSource) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required == nil {
 		return
 	}
@@ -166,9 +151,9 @@ func ensureEnvFromSource(modified *bool, existing *[]corev1.EnvFromSource, requi
 		*modified = true
 	}
 }
-
 func ensureProbePtr(modified *bool, existing **corev1.Probe, required *corev1.Probe) {
-	// if we have no required, then we don't care what someone else has set
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required == nil {
 		return
 	}
@@ -179,47 +164,50 @@ func ensureProbePtr(modified *bool, existing **corev1.Probe, required *corev1.Pr
 	}
 	ensureProbe(modified, *existing, *required)
 }
-
 func ensureProbe(modified *bool, existing *corev1.Probe, required corev1.Probe) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	setInt32(modified, &existing.InitialDelaySeconds, required.InitialDelaySeconds)
-
 	ensureProbeHandler(modified, &existing.Handler, required.Handler)
 }
-
 func ensureProbeHandler(modified *bool, existing *corev1.Handler, required corev1.Handler) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if !equality.Semantic.DeepEqual(required, *existing) {
 		*modified = true
 		*existing = required
 	}
 }
-
 func ensureContainerPort(modified *bool, existing *corev1.ContainerPort, required corev1.ContainerPort) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if !equality.Semantic.DeepEqual(required, *existing) {
 		*modified = true
 		*existing = required
 	}
 }
-
 func ensureVolumeMount(modified *bool, existing *corev1.VolumeMount, required corev1.VolumeMount) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if !equality.Semantic.DeepEqual(required, *existing) {
 		*modified = true
 		*existing = required
 	}
 }
-
 func ensureVolume(modified *bool, existing *corev1.Volume, required corev1.Volume) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if !equality.Semantic.DeepEqual(required, *existing) {
 		*modified = true
 		*existing = required
 	}
 }
-
 func ensureSecurityContextPtr(modified *bool, existing **corev1.SecurityContext, required *corev1.SecurityContext) {
-	// if we have no required, then we don't care what someone else has set
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required == nil {
 		return
 	}
-
 	if *existing == nil {
 		*modified = true
 		*existing = required
@@ -227,8 +215,9 @@ func ensureSecurityContextPtr(modified *bool, existing **corev1.SecurityContext,
 	}
 	ensureSecurityContext(modified, *existing, *required)
 }
-
 func ensureSecurityContext(modified *bool, existing *corev1.SecurityContext, required corev1.SecurityContext) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	ensureCapabilitiesPtr(modified, &existing.Capabilities, required.Capabilities)
 	ensureSELinuxOptionsPtr(modified, &existing.SELinuxOptions, required.SELinuxOptions)
 	setBoolPtr(modified, &existing.Privileged, required.Privileged)
@@ -237,13 +226,12 @@ func ensureSecurityContext(modified *bool, existing *corev1.SecurityContext, req
 	setBoolPtr(modified, &existing.ReadOnlyRootFilesystem, required.ReadOnlyRootFilesystem)
 	setBoolPtr(modified, &existing.AllowPrivilegeEscalation, required.AllowPrivilegeEscalation)
 }
-
 func ensureCapabilitiesPtr(modified *bool, existing **corev1.Capabilities, required *corev1.Capabilities) {
-	// if we have no required, then we don't care what someone else has set
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required == nil {
 		return
 	}
-
 	if *existing == nil {
 		*modified = true
 		*existing = required
@@ -251,9 +239,9 @@ func ensureCapabilitiesPtr(modified *bool, existing **corev1.Capabilities, requi
 	}
 	ensureCapabilities(modified, *existing, *required)
 }
-
 func ensureCapabilities(modified *bool, existing *corev1.Capabilities, required corev1.Capabilities) {
-	// any Add we specify, we require.
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, required := range required.Add {
 		found := false
 		for _, curr := range existing.Add {
@@ -267,8 +255,6 @@ func ensureCapabilities(modified *bool, existing *corev1.Capabilities, required 
 			existing.Add = append(existing.Add, required)
 		}
 	}
-
-	// any Drop we specify, we require.
 	for _, required := range required.Drop {
 		found := false
 		for _, curr := range existing.Drop {
@@ -283,8 +269,9 @@ func ensureCapabilities(modified *bool, existing *corev1.Capabilities, required 
 		}
 	}
 }
-
 func setStringSliceIfSet(modified *bool, existing *[]string, required []string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required == nil {
 		return
 	}
@@ -293,15 +280,17 @@ func setStringSliceIfSet(modified *bool, existing *[]string, required []string) 
 		*modified = true
 	}
 }
-
 func setStringSlice(modified *bool, existing *[]string, required []string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if !reflect.DeepEqual(required, *existing) {
 		*existing = required
 		*modified = true
 	}
 }
-
 func mergeStringSlice(modified *bool, existing *[]string, required []string) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, required := range required {
 		found := false
 		for _, curr := range *existing {
@@ -316,8 +305,9 @@ func mergeStringSlice(modified *bool, existing *[]string, required []string) {
 		}
 	}
 }
-
 func ensureTolerations(modified *bool, existing *[]corev1.Toleration, required []corev1.Toleration) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for ridx := range required {
 		found := false
 		for eidx := range *existing {
@@ -336,13 +326,12 @@ func ensureTolerations(modified *bool, existing *[]corev1.Toleration, required [
 		}
 	}
 }
-
 func ensureAffinityPtr(modified *bool, existing **corev1.Affinity, required *corev1.Affinity) {
-	// if we have no required, then we don't care what someone else has set
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required == nil {
 		return
 	}
-
 	if *existing == nil {
 		*modified = true
 		*existing = required
@@ -350,8 +339,9 @@ func ensureAffinityPtr(modified *bool, existing **corev1.Affinity, required *cor
 	}
 	ensureAffinity(modified, *existing, *required)
 }
-
 func ensureAffinity(modified *bool, existing *corev1.Affinity, required corev1.Affinity) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if !equality.Semantic.DeepEqual(existing.NodeAffinity, required.NodeAffinity) {
 		*modified = true
 		(*existing).NodeAffinity = required.NodeAffinity
@@ -365,13 +355,12 @@ func ensureAffinity(modified *bool, existing *corev1.Affinity, required corev1.A
 		(*existing).PodAntiAffinity = required.PodAntiAffinity
 	}
 }
-
 func ensurePodSecurityContextPtr(modified *bool, existing **corev1.PodSecurityContext, required *corev1.PodSecurityContext) {
-	// if we have no required, then we don't care what someone else has set
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required == nil {
 		return
 	}
-
 	if *existing == nil {
 		*modified = true
 		*existing = required
@@ -379,14 +368,13 @@ func ensurePodSecurityContextPtr(modified *bool, existing **corev1.PodSecurityCo
 	}
 	ensurePodSecurityContext(modified, *existing, *required)
 }
-
 func ensurePodSecurityContext(modified *bool, existing *corev1.PodSecurityContext, required corev1.PodSecurityContext) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	ensureSELinuxOptionsPtr(modified, &existing.SELinuxOptions, required.SELinuxOptions)
 	setInt64Ptr(modified, &existing.RunAsUser, required.RunAsUser)
 	setInt64Ptr(modified, &existing.RunAsGroup, required.RunAsGroup)
 	setBoolPtr(modified, &existing.RunAsNonRoot, required.RunAsNonRoot)
-
-	// any SupplementalGroups we specify, we require.
 	for _, required := range required.SupplementalGroups {
 		found := false
 		for _, curr := range existing.SupplementalGroups {
@@ -400,10 +388,7 @@ func ensurePodSecurityContext(modified *bool, existing *corev1.PodSecurityContex
 			existing.SupplementalGroups = append(existing.SupplementalGroups, required)
 		}
 	}
-
 	setInt64Ptr(modified, &existing.FSGroup, required.FSGroup)
-
-	// any SupplementalGroups we specify, we require.
 	for _, required := range required.Sysctls {
 		found := false
 		for j, curr := range existing.Sysctls {
@@ -422,13 +407,12 @@ func ensurePodSecurityContext(modified *bool, existing *corev1.PodSecurityContex
 		}
 	}
 }
-
 func ensureSELinuxOptionsPtr(modified *bool, existing **corev1.SELinuxOptions, required *corev1.SELinuxOptions) {
-	// if we have no required, then we don't care what someone else has set
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required == nil {
 		return
 	}
-
 	if *existing == nil {
 		*modified = true
 		*existing = required
@@ -436,27 +420,28 @@ func ensureSELinuxOptionsPtr(modified *bool, existing **corev1.SELinuxOptions, r
 	}
 	ensureSELinuxOptions(modified, *existing, *required)
 }
-
 func ensureSELinuxOptions(modified *bool, existing *corev1.SELinuxOptions, required corev1.SELinuxOptions) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	setStringIfSet(modified, &existing.User, required.User)
 	setStringIfSet(modified, &existing.Role, required.Role)
 	setStringIfSet(modified, &existing.Type, required.Type)
 	setStringIfSet(modified, &existing.Level, required.Level)
 }
-
 func setBool(modified *bool, existing *bool, required bool) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required != *existing {
 		*existing = required
 		*modified = true
 	}
 }
-
 func setBoolPtr(modified *bool, existing **bool, required *bool) {
-	// if we have no required, then we don't care what someone else has set
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required == nil {
 		return
 	}
-
 	if *existing == nil {
 		*modified = true
 		*existing = required
@@ -464,15 +449,17 @@ func setBoolPtr(modified *bool, existing **bool, required *bool) {
 	}
 	setBool(modified, *existing, *required)
 }
-
 func setInt32(modified *bool, existing *int32, required int32) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required != *existing {
 		*existing = required
 		*modified = true
 	}
 }
-
 func setInt32Ptr(modified *bool, existing **int32, required *int32) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if *existing == nil || (required == nil && *existing != nil) {
 		*modified = true
 		*existing = required
@@ -480,20 +467,20 @@ func setInt32Ptr(modified *bool, existing **int32, required *int32) {
 	}
 	setInt32(modified, *existing, *required)
 }
-
 func setInt64(modified *bool, existing *int64, required int64) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required != *existing {
 		*existing = required
 		*modified = true
 	}
 }
-
 func setInt64Ptr(modified *bool, existing **int64, required *int64) {
-	// if we have no required, then we don't care what someone else has set
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if required == nil {
 		return
 	}
-
 	if *existing == nil {
 		*modified = true
 		*existing = required

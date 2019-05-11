@@ -10,6 +10,8 @@ import (
 )
 
 func ApplyAPIService(client apiregclientv1.APIServicesGetter, required *apiregv1.APIService) (*apiregv1.APIService, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	existing, err := client.APIServices().Get(required.Name, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		actual, err := client.APIServices().Create(required)
@@ -18,17 +20,14 @@ func ApplyAPIService(client apiregclientv1.APIServicesGetter, required *apiregv1
 	if err != nil {
 		return nil, false, err
 	}
-	// if we only create this resource, we have no need to continue further
 	if IsCreateOnly(required) {
 		return nil, false, nil
 	}
-
 	modified := pointer.BoolPtr(false)
 	resourcemerge.EnsureAPIService(modified, existing, *required)
 	if !*modified {
 		return existing, false, nil
 	}
-
 	actual, err := client.APIServices().Update(existing)
 	return actual, true, err
 }

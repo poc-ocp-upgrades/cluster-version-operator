@@ -9,31 +9,27 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-
 	"github.com/golang/glog"
-
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 )
 
-// SplitOnJobs enforces the rule that any Job in the payload prevents reordering or parallelism (either before or after)
 func SplitOnJobs(task *Task) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return task.Manifest.GVK == schema.GroupVersionKind{Kind: "Job", Version: "v1", Group: "batch"}
 }
 
 var reMatchPattern = regexp.MustCompile(`^0000_(\d+)_([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*?)_`)
 
 const (
-	groupNumber    = 1
-	groupComponent = 2
+	groupNumber		= 1
+	groupComponent	= 2
 )
 
-// ByNumberAndComponent creates parallelization for tasks whose original filenames are of the form
-// 0000_NN_NAME_* - files that share 0000_NN_NAME_ are run in serial, but chunks of files that have
-// the same 0000_NN but different NAME can be run in parallel. If the input is not sorted in an order
-// such that 0000_NN_NAME elements are next to each other, the splitter will treat those as unsplittable
-// elements.
 func ByNumberAndComponent(tasks []*Task) [][]*TaskNode {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(tasks) <= 1 {
 		return nil
 	}
@@ -42,7 +38,6 @@ func ByNumberAndComponent(tasks []*Task) [][]*TaskNode {
 	for i := 0; i < len(tasks); i++ {
 		matches = append(matches, reMatchPattern.FindStringSubmatch(tasks[i].Manifest.OriginalFilename))
 	}
-
 	var buckets [][]*TaskNode
 	var lastNode *TaskNode
 	for i := 0; i < count; {
@@ -78,12 +73,9 @@ func ByNumberAndComponent(tasks []*Task) [][]*TaskNode {
 	}
 	return buckets
 }
-
-// FlattenByNumberAndComponent creates parallelization for tasks whose original filenames are of the form
-// 0000_NN_NAME_* - files that share 0000_NN_NAME_ are run in serial, but chunks of files that have
-// different 0000_NN_NAME can be run in parallel. This splitter does *not* preserve ordering within run
-// levels and is intended only for use cases where order is not important.
 func FlattenByNumberAndComponent(tasks []*Task) [][]*TaskNode {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if len(tasks) <= 1 {
 		return nil
 	}
@@ -92,7 +84,6 @@ func FlattenByNumberAndComponent(tasks []*Task) [][]*TaskNode {
 	for i := 0; i < len(tasks); i++ {
 		matches = append(matches, reMatchPattern.FindStringSubmatch(tasks[i].Manifest.OriginalFilename))
 	}
-
 	var lastNode *TaskNode
 	var groups []*TaskNode
 	for i := 0; i < count; {
@@ -128,12 +119,14 @@ func FlattenByNumberAndComponent(tasks []*Task) [][]*TaskNode {
 }
 
 type TaskNode struct {
-	In    []int
-	Tasks []*Task
-	Out   []int
+	In		[]int
+	Tasks	[]*Task
+	Out		[]int
 }
 
 func (n TaskNode) String() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var arr []string
 	for _, t := range n.Tasks {
 		if len(t.Manifest.OriginalFilename) > 0 {
@@ -144,24 +137,27 @@ func (n TaskNode) String() string {
 	}
 	return "{Tasks: " + strings.Join(arr, ", ") + "}"
 }
-
 func (n *TaskNode) replaceIn(index, with int) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for i, from := range n.In {
 		if from == index {
 			n.In[i] = with
 		}
 	}
 }
-
 func (n *TaskNode) replaceOut(index, with int) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for i, to := range n.Out {
 		if to == index {
 			n.Out[i] = with
 		}
 	}
 }
-
 func (n *TaskNode) appendOut(items ...int) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, in := range items {
 		if !containsInt(n.Out, in) {
 			n.Out = append(n.Out, in)
@@ -169,25 +165,16 @@ func (n *TaskNode) appendOut(items ...int) {
 	}
 }
 
-// TaskGraph provides methods for parallelizing a linear sequence
-// of Tasks based on Split or Parallelize functions.
-type TaskGraph struct {
-	Nodes []*TaskNode
-}
+type TaskGraph struct{ Nodes []*TaskNode }
 
-// NewTaskGraph creates a graph with a single node containing
-// the supplied tasks.
 func NewTaskGraph(tasks []*Task) *TaskGraph {
-	return &TaskGraph{
-		Nodes: []*TaskNode{
-			{
-				Tasks: tasks,
-			},
-		},
-	}
+	_logClusterCodePath()
+	defer _logClusterCodePath()
+	return &TaskGraph{Nodes: []*TaskNode{{Tasks: tasks}}}
 }
-
 func containsInt(arr []int, value int) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, i := range arr {
 		if i == value {
 			return true
@@ -195,28 +182,27 @@ func containsInt(arr []int, value int) bool {
 	}
 	return false
 }
-
 func (g *TaskGraph) replaceInOf(index, with int) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	node := g.Nodes[index]
 	in := node.In
 	for _, pos := range in {
 		g.Nodes[pos].replaceOut(index, with)
 	}
 }
-
 func (g *TaskGraph) replaceOutOf(index, with int) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	node := g.Nodes[index]
 	out := node.Out
 	for _, pos := range out {
 		g.Nodes[pos].replaceIn(index, with)
 	}
 }
-
-// Split breaks a graph node with a task that onFn returns true into
-// one, two, or three separate nodes, preserving the order of tasks.
-// E.g. a node with [a,b,c,d] where onFn returns true of b will result
-// in a graph with [a] -> [b] -> [c,d].
 func (g *TaskGraph) Split(onFn func(task *Task) bool) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for i := 0; i < len(g.Nodes); i++ {
 		node := g.Nodes[i]
 		tasks := node.Tasks
@@ -227,46 +213,33 @@ func (g *TaskGraph) Split(onFn func(task *Task) bool) {
 			if !onFn(task) {
 				continue
 			}
-
 			if j > 0 {
 				left := tasks[0:j]
 				next := len(g.Nodes)
-				nextNode := &TaskNode{
-					In:    node.In,
-					Tasks: left,
-					Out:   []int{i},
-				}
+				nextNode := &TaskNode{In: node.In, Tasks: left, Out: []int{i}}
 				g.Nodes = append(g.Nodes, nextNode)
 				g.replaceInOf(i, next)
 				node.In = []int{next}
 			}
-
 			if j < (len(tasks) - 1) {
 				right := tasks[j+1:]
 				next := len(g.Nodes)
-				nextNode := &TaskNode{
-					In:    []int{i},
-					Tasks: right,
-					Out:   node.Out,
-				}
+				nextNode := &TaskNode{In: []int{i}, Tasks: right, Out: node.Out}
 				g.Nodes = append(g.Nodes, nextNode)
 				g.replaceOutOf(i, next)
 				node.Out = []int{next}
 			}
-
 			node.Tasks = tasks[j : j+1]
 			break
 		}
 	}
 }
 
-// BreakFunc returns the input tasks in order of dependencies with
-// explicit parallelizm allowed per task in an array of task nodes.
 type BreakFunc func([]*Task) [][]*TaskNode
 
-// PermuteOrder returns a split function that ensures the order of
-// each step is shuffled based on r.
 func PermuteOrder(breakFn BreakFunc, r *rand.Rand) BreakFunc {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	return func(tasks []*Task) [][]*TaskNode {
 		steps := breakFn(tasks)
 		for _, stepTasks := range steps {
@@ -277,11 +250,9 @@ func PermuteOrder(breakFn BreakFunc, r *rand.Rand) BreakFunc {
 		return steps
 	}
 }
-
-// Parallelize takes the given breakFn and splits any TaskNode's tasks up
-// into parallel groups. If breakFn returns an empty array or a single
-// array item with a single task node, that is considered a no-op.
 func (g *TaskGraph) Parallelize(breakFn BreakFunc) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for i := 0; i < len(g.Nodes); i++ {
 		node := g.Nodes[i]
 		results := breakFn(node.Tasks)
@@ -291,16 +262,12 @@ func (g *TaskGraph) Parallelize(breakFn BreakFunc) {
 		node.Tasks = nil
 		out := node.Out
 		node.Out = nil
-
-		// starting with the left anchor, create chains of nodes,
-		// and avoid M x N in/out connections by creating spacers
 		in := []int{i}
 		for _, inNodes := range results {
 			if len(inNodes) == 0 {
 				continue
 			}
 			singleIn, singleOut := len(in) == 1, len(inNodes) == 1
-
 			switch {
 			case singleIn && singleOut, singleIn, singleOut:
 				in = g.bulkAdd(inNodes, in)
@@ -309,14 +276,9 @@ func (g *TaskGraph) Parallelize(breakFn BreakFunc) {
 				in = g.bulkAdd(inNodes, in)
 			}
 		}
-
-		// make node the left anchor and nextNode the right anchor
 		if len(out) > 0 {
 			next := len(g.Nodes)
-			nextNode := &TaskNode{
-				Tasks: nil,
-				Out:   out,
-			}
+			nextNode := &TaskNode{Tasks: nil, Out: out}
 			g.Nodes = append(g.Nodes, nextNode)
 			for _, j := range out {
 				g.Nodes[j].replaceIn(i, next)
@@ -328,8 +290,9 @@ func (g *TaskGraph) Parallelize(breakFn BreakFunc) {
 		}
 	}
 }
-
 func (g *TaskGraph) Roots() []int {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	var roots []int
 	for i, n := range g.Nodes {
 		if len(n.In) > 0 {
@@ -339,8 +302,9 @@ func (g *TaskGraph) Roots() []int {
 	}
 	return roots
 }
-
 func (g *TaskGraph) Tree() string {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	roots := g.Roots()
 	visited := make([]int, len(g.Nodes))
 	stage := 0
@@ -379,8 +343,9 @@ func (g *TaskGraph) Tree() string {
 	out = append(out, fmt.Sprintf("summary: depth=%d, levels=%s", totalDepth, strings.Join(levels, ",")))
 	return strings.Join(out, "\n")
 }
-
 func covers(all []int, some []int) bool {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	for _, i := range some {
 		if all[i] == 0 {
 			return false
@@ -388,8 +353,9 @@ func covers(all []int, some []int) bool {
 	}
 	return true
 }
-
 func (g *TaskGraph) bulkAdd(nodes []*TaskNode, inNodes []int) []int {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	from := len(g.Nodes)
 	g.Nodes = append(g.Nodes, nodes...)
 	to := len(g.Nodes)
@@ -400,7 +366,6 @@ func (g *TaskGraph) bulkAdd(nodes []*TaskNode, inNodes []int) []int {
 		}
 		return toNodes
 	}
-
 	next := make([]int, to-from)
 	for k := from; k < to; k++ {
 		g.Nodes[k].In = append([]int(nil), inNodes...)
@@ -413,35 +378,26 @@ func (g *TaskGraph) bulkAdd(nodes []*TaskNode, inNodes []int) []int {
 }
 
 type runTasks struct {
-	index int
-	tasks []*Task
+	index	int
+	tasks	[]*Task
 }
-
 type taskStatus struct {
-	index   int
-	success bool
+	index	int
+	success	bool
 }
 
-// RunGraph executes the provided graph in order and in parallel up to maxParallelism. It will not start
-// a new TaskNode until all of the prerequisites have completed. If fn returns an error, no dependencies
-// of that node will be executed, but other indepedent edges will continue executing.
 func RunGraph(ctx context.Context, graph *TaskGraph, maxParallelism int, fn func(ctx context.Context, tasks []*Task) error) []error {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	nestedCtx, cancelFn := context.WithCancel(ctx)
 	defer cancelFn()
-
-	// This goroutine takes nodes from the graph as they are available (their prereq has completed) and
-	// sends them to workCh. It uses completeCh to know that a previously dispatched item is complete.
 	completeCh := make(chan taskStatus, maxParallelism)
 	defer close(completeCh)
-
 	workCh := make(chan runTasks, maxParallelism)
 	go func() {
 		defer close(workCh)
-
-		// visited tracks nodes we have not sent (0), are currently
-		// waiting for completion (1), or have completed (2,3)
 		const (
-			nodeNotVisited int = iota
+			nodeNotVisited	int	= iota
 			nodeWorking
 			nodeFailed
 			nodeComplete
@@ -456,13 +412,10 @@ func RunGraph(ctx context.Context, graph *TaskGraph, maxParallelism int, fn func
 			}
 			return true
 		}
-
 		remaining := len(graph.Nodes)
 		var inflight int
 		for {
 			found := 0
-
-			// walk the graph, filling the work queue
 			for i := 0; i < len(visited); i++ {
 				if visited[i] != nodeNotVisited {
 					continue
@@ -478,8 +431,6 @@ func RunGraph(ctx context.Context, graph *TaskGraph, maxParallelism int, fn func
 					}
 				}
 			}
-
-			// try to empty the done channel
 			for len(completeCh) > 0 {
 				finished := <-completeCh
 				if finished.success {
@@ -491,28 +442,19 @@ func RunGraph(ctx context.Context, graph *TaskGraph, maxParallelism int, fn func
 				inflight--
 				found++
 			}
-
 			if found > 0 {
 				continue
 			}
-
-			// no more work to hand out
 			if remaining == 0 {
 				glog.V(4).Infof("Graph is complete")
 				return
 			}
-
-			// we walked the entire graph, there are still nodes remaining, but we're not waiting
-			// for anything
 			if inflight == 0 && found == 0 {
 				glog.V(4).Infof("No more reachable nodes in graph, continue")
 				break
 			}
-
-			// we did nothing this round, so we have to wait for more
 			finished, ok := <-completeCh
 			if !ok {
-				// we've been aborted
 				glog.V(4).Infof("Stopped graph walker due to cancel")
 				return
 			}
@@ -524,8 +466,6 @@ func RunGraph(ctx context.Context, graph *TaskGraph, maxParallelism int, fn func
 			remaining--
 			inflight--
 		}
-
-		// take everything remaining and process in order
 		var unreachable []*Task
 		for i := 0; i < len(visited); i++ {
 			if visited[i] == nodeNotVisited && canVisit(graph.Nodes[i]) {
@@ -543,7 +483,6 @@ func RunGraph(ctx context.Context, graph *TaskGraph, maxParallelism int, fn func
 		}
 		glog.V(4).Infof("No more work")
 	}()
-
 	errCh := make(chan error, maxParallelism)
 	wg := sync.WaitGroup{}
 	if maxParallelism < 1 {
@@ -580,7 +519,6 @@ func RunGraph(ctx context.Context, graph *TaskGraph, maxParallelism int, fn func
 		glog.V(4).Infof("Workers finished")
 		close(errCh)
 	}()
-
 	var errs []error
 	for err := range errCh {
 		errs = append(errs, err)

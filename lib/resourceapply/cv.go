@@ -11,6 +11,8 @@ import (
 )
 
 func ApplyClusterVersion(client configclientv1.ClusterVersionsGetter, required *configv1.ClusterVersion) (*configv1.ClusterVersion, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	existing, err := client.ClusterVersions().Get(required.Name, metav1.GetOptions{})
 	if errors.IsNotFound(err) {
 		actual, err := client.ClusterVersions().Create(required)
@@ -19,22 +21,20 @@ func ApplyClusterVersion(client configclientv1.ClusterVersionsGetter, required *
 	if err != nil {
 		return nil, false, err
 	}
-	// if we only create this resource, we have no need to continue further
 	if IsCreateOnly(required) {
 		return nil, false, nil
 	}
-
 	modified := pointer.BoolPtr(false)
 	resourcemerge.EnsureClusterVersion(modified, existing, *required)
 	if !*modified {
 		return existing, false, nil
 	}
-
 	actual, err := client.ClusterVersions().Update(existing)
 	return actual, true, err
 }
-
 func ApplyClusterVersionFromCache(lister configlistersv1.ClusterVersionLister, client configclientv1.ClusterVersionsGetter, required *configv1.ClusterVersion) (*configv1.ClusterVersion, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	obj, err := lister.Get(required.Name)
 	if errors.IsNotFound(err) {
 		actual, err := client.ClusterVersions().Create(required)
@@ -43,19 +43,15 @@ func ApplyClusterVersionFromCache(lister configlistersv1.ClusterVersionLister, c
 	if err != nil {
 		return nil, false, err
 	}
-	// if we only create this resource, we have no need to continue further
 	if IsCreateOnly(required) {
 		return nil, false, nil
 	}
-
-	// Don't want to mutate cache.
 	existing := obj.DeepCopy()
 	modified := pointer.BoolPtr(false)
 	resourcemerge.EnsureClusterVersion(modified, existing, *required)
 	if !*modified {
 		return existing, false, nil
 	}
-
 	actual, err := client.ClusterVersions().Update(existing)
 	return actual, true, err
 }

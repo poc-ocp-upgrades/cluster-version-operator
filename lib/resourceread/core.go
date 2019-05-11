@@ -7,43 +7,47 @@ import (
 )
 
 var (
-	coreScheme = runtime.NewScheme()
-	coreCodecs = serializer.NewCodecFactory(coreScheme)
+	coreScheme	= runtime.NewScheme()
+	coreCodecs	= serializer.NewCodecFactory(coreScheme)
 )
 
 func init() {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	if err := corev1.AddToScheme(coreScheme); err != nil {
 		panic(err)
 	}
 }
-
-// ReadConfigMapV1OrDie reads configmap object from bytes. Panics on error.
 func ReadConfigMapV1OrDie(objBytes []byte) *corev1.ConfigMap {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(coreCodecs.UniversalDecoder(corev1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)
 	}
 	return requiredObj.(*corev1.ConfigMap)
 }
-
-// ReadServiceAccountV1OrDie reads serviceaccount object from bytes. Panics on error.
 func ReadServiceAccountV1OrDie(objBytes []byte) *corev1.ServiceAccount {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(coreCodecs.UniversalDecoder(corev1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)
 	}
 	return requiredObj.(*corev1.ServiceAccount)
 }
-
 func ReadNamespaceV1OrDie(objBytes []byte) *corev1.Namespace {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(coreCodecs.UniversalDecoder(corev1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)
 	}
 	return requiredObj.(*corev1.Namespace)
 }
-
 func ReadServiceV1OrDie(objBytes []byte) *corev1.Service {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	requiredObj, err := runtime.Decode(coreCodecs.UniversalDecoder(corev1.SchemeGroupVersion), objBytes)
 	if err != nil {
 		panic(err)

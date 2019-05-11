@@ -9,8 +9,9 @@ import (
 	"k8s.io/utils/pointer"
 )
 
-// ApplySecurityContextConstraints applies the required SecurityContextConstraints to the cluster.
 func ApplySecurityContextConstraints(client securityclientv1.SecurityContextConstraintsGetter, required *securityv1.SecurityContextConstraints) (*securityv1.SecurityContextConstraints, bool, error) {
+	_logClusterCodePath()
+	defer _logClusterCodePath()
 	existing, err := client.SecurityContextConstraints().Get(required.Name, metav1.GetOptions{})
 	if apierrors.IsNotFound(err) {
 		actual, err := client.SecurityContextConstraints().Create(required)
@@ -19,17 +20,14 @@ func ApplySecurityContextConstraints(client securityclientv1.SecurityContextCons
 	if err != nil {
 		return nil, false, err
 	}
-	// if we only create this resource, we have no need to continue further
 	if IsCreateOnly(required) {
 		return nil, false, nil
 	}
-
 	modified := pointer.BoolPtr(false)
 	resourcemerge.EnsureObjectMeta(modified, &existing.ObjectMeta, required.ObjectMeta)
 	if !*modified {
 		return existing, false, nil
 	}
-
 	actual, err := client.SecurityContextConstraints().Update(existing)
 	return actual, true, err
 }
